@@ -1,0 +1,7 @@
+This is a random French tidal gauge data set (don't remember where it comes from, doesn't matter).
+This data set is used to test basic data parsing methods and to stress test the EVA aspects
+of the program.
+
+It  comes in the following structure:
+
+| year | month | day | hour | water level (mm) |

@@ -145,6 +145,8 @@ $RECYCLE.BIN/
 .idea/tasks.xml
 
 # User-specific stuff:
+.idea/vcs.xml
+.idea/dictionaries/georg.xml
 .idea/workspace.xml
 .idea/tasks.xml
 
