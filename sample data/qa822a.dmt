@@ -1,0 +1,256 @@
+                                                                                
+                            QUALITY ASSESSMENT OF SEA LEVEL DATA                
+                                           by the                               
+                   UH SEA LEVEL CENTER/NATIONAL OCEANOGRAPHIC DATA CENTER     
+                                 JOINT ARCHIVE FOR SEA LEVEL                    
+                                       updated 27 Apr 2015
+              Station  : Brest                     Latitude:  48 23.0N
+              Country  : France                   Longitude: 004 29.7W
+              JASL #   : 822A                 Time Meridian: GMT                
+              GLOSS #  : 242  Originator #:103       NODC #: 74008401
+              Contributor  : Université de La Rochelle
+                             CLDG/SONEL - Centre Littoral de Geophysique
+                             Avenue Michel Crepeau
+                             F-17042 LA ROCHELLE Cedex
+                                and
+                             Service Hydrographique et Oceanographique 
+                             de la Marine (SHOM)
+                             B.P. 426
+                             13 Rue du Chatellier
+                             29200 Brest Cedex, France
+              Originator   : SONEL, SHOM
+              Original Data: float: analog; others: digital
+              Instrmnt Type: 1846-1993: float and stilling well;
+                             1993-2004: acoustic gauge
+                             29 Jun 2004-: radar Krohne BM100 (pulse type)
+              Digitzd Intvl: float: one hour; other: 10 min
+              Present Data : Hourly, daily, and monthly values obtained by:     
+                    Hourly : float: one hour spot; radar: simple average of
+                             2 min data from 1 sec samples centered on the hour
+                    Daily  : 119-point convolution filter (Bloomfield, 1976)    
+                             centered on noon applied to the hourly data        
+                             with respective periods of the 95, 50, and 5%      
+                             amplitude points at 124.0, 60.2, and 40.2 hours    
+                    Monthly: Simple average of all daily values; calculated if  
+                             7 or fewer days are missing                        
+              Span of data : 04 Jan 1846 - 31 Dec 2014
+              Gaps > 1 mon : 31 May 1857 - 24 Nov 1859;20 Jan 1860 - 30 Apr 1860
+                             31 Aug 1863 - 29 Feb 1864;31 Aug 1877 - 02 Oct 1877
+                             31 Aug 1878 - 03 Oct 1878;31 May 1897 - 02 Aug 1897
+                             31 May 1907 - 30 Jun 1907;31 Dec 1916 - 01 Feb 1916
+                             31 Aug 1922 - 02 Oct 1922;01 Nov 1937 - 31 Dec 1938
+                             30 Apr 1944 - 29 Sep 1952;17 Jul 1980 - 16 Aug 1980
+                             23 Apr 2012 - 21 Sep 2012
+              Time Refernce: GMT (00-23 hours)   Space-filler Flag   :-9999     
+              Units        : millimeters         Missing Data Flag   : 9999     
+              Existing     : Yes                 Operational         : Yes 
+              Sat. Trans.  : Yes                 Distribution        : 1846-2014
+              Refernce Levl: Repere A: repere no.1 NGF situe sur le polier est, 
+                                 pres de l'entree Nord du tunnel
+                             Repere A = 5.589m 
+                             Repere B = 5.670m 
+                             Repere C = 5.481m 
+                             Repere D = 4.492m 
+                             Repere F = 4.807m 
+                             Repere G = 4.349m 
+                             Cote par rapport au zero NGF
+                             Repere B: repere no.2 NGF situe a l'entree Sud du 
+                                tunnel du chateau. 
+                             Repere C: macaron no.0-o NGF scelle a droite de 
+                                l'entree NW des souterrains du chateau. 
+                             Repere D: rivet no.0-I NGF scelle sur le quai a 
+                                droite de la passerelle d'acces au maregraphe. 
+                             Repere G: echelle E3 - graduation 8.80m.
+ 
+              Comment      : The tidal analysis does not resolve all the
+                             harmonic constituents thus the residuals are
+                             noisy.  Only the most extreme fluctuations in
+                             the residuals are noted below.
+                         
+                             Detailed documentation can be found from
+                             Pouvreau, Nicolas. These de Doctorat del 
+                             Universit de la Rochelle. Trois cent ans de
+                             mesures maregraphiques en France: outils,
+                             methodes et tendances des composantes du niveau
+                             de la mer au port de Brest.  Internet:
+                             "http://refmar.shom.fr/fr/c/document_library/
+                             get_file?uuid=6e43e1a5-e637-4075-9cb5-
+                             1d16583f9f89&groupId=10227".
+                                                                                
+                    CI MISSING              REPLACED GAPS     QUESTIONABLE      
+              YEAR (%) DATA                 OR BAD DATA       FLUCTUATIONS      
+              ---- --- -------------------- --------------- --------------------
+              1846  99 none                 none            365
+              1847  95 1-21                 none            none
+              1848 100 none                 none            none
+              1849 100 none                 none            none
+              1850 100 none                 none            none
+              1851 100 none                 none            none
+              1852  95 20-39                none            20
+              1853 100 none                 none            none
+              1854 100 none                 none            none
+              1855 100 none                 none            none
+              1856 100 none                 none            none
+              1857  41 151-365              none            none
+              1858   0 1-365                none            none
+              1859  10 1-328                none            none
+              1860  72 20-121               none            none
+              1861  97 353-365              none            none
+              1862  95 1-17                 none            none
+              1863  67 243-365              none            none
+              1864  84 1-60                 none            61
+              1865 100 none                 none            365
+              1866 100 none                 none            none
+              1867  94 223-245              none            none
+              1868  95 196-213              none            none
+              1869 100 none                 none            45-46,58-59
+              1870 100 none                 none            32
+              1871 100 none                 none            218-220
+              1872  98 87-91,105-111        none            none
+              1873 100 none                 none            none
+              1874  97 120-132              none            none
+              1875 100 none                 none            none
+              1876 100 none                 none            125,363
+              1877  91 243-275              none            none
+              1878  91 243-276              none            none
+              1879 100 none                 none            none
+              1880 100 none                 none            none
+              1881 100 none                 none            none
+              1882 100 none                 none            none
+              1883 100 none                 none            none
+              1884 100 none                 none            none
+              1885 100 none                 none            none
+              1886 100 none                 none            none
+              1887 100 none                 none            none
+              1888 100 none                 none            none
+              1889 100 none                 none            none
+              1890 100 none                 none            none
+              1891  93 306-334              none            none
+              1892 100 none                 none            none
+              1893 100 none                 none            none
+              1894 100 none                 none            none
+              1895 100 none                 none            none
+              1896 100 none                 none            none
+              1897  83 151-214              none            none
+              1898 100 none                 none            52,159-160
+              1899 100 none                 none            none
+              1900 100 none                 none            none
+              1901 100 none                 none            none
+              1902 100 none                 none            none
+              1903 100 none                 none            none
+              1904 100 none                 none            none
+              1905 100 none                 none            none
+              1906 100 none                 none            none
+              1907  92 151-181              (23)031-(06)032 121-122,267-268
+              1908 100 none                 none            122
+              1909 100 none                 (00)147-(07)147 none
+                                            (23)243-(12)244
+              1910  96 109-122              none            78,91-93,98-100,352
+              1911  98 81-88                none            none
+              1912 100 none                 none            none
+              1913 100 none                 none            none
+              1914 100 none                 (23)365-(14)001 none
+              1915 100 none                 none            none
+              1916 100 none                 none            none
+              1917  91 1-32                 none            58-59
+              1918 100 none                 none            none
+              1919 100 none                 none            none
+              1920  99 259-263              none            none
+              1921 100 none                 none            none
+              1922  90 243-275,343-350      none            none
+              1923  98 198-207              none            none
+              1924 100 none                 none            none
+              1925 100 none                 none            none
+              1926 100 none                 none            210-213
+              1927 100 none                 none            none
+              1928 100 none                 none            none
+              1929 100 none                 none            none
+              1930 100 none                 none            none
+              1931 100 none                 none            none
+              1932 100 none                 none            none
+              1933 100 none                 none            none
+              1934 100 none                 none            none
+              1935 100 none                 none            none
+              1936 100 none                 none            none
+              1937  83 305-365              none            none
+              1938   0 1-365                none            none
+              1939 100 none                 none            none
+              1940  98 175-184              none            183-184
+              1941 100 none                 none            none
+              1942 100 none                 none            none
+              1943 100 none                 none            none
+              1944  33 121-366              none            none
+              1945   0 1-365                none            none
+              1946   0 1-365                none            none
+              1947   0 1-365                none            none
+              1948   0 1-366                none            none
+              1949   0 1-365                none            none
+              1950   0 1-365                none            none
+              1951   0 1-366                none            none
+              1952  25 1-273,310-312,       none            none
+                       357-359
+              1953 100 none                 none            45-47,50
+              1954 100 none                 none            119
+              1955 100 none                 none            305
+              1956 100 none                 (00)142-(07)142 114,277-279
+              1957 100 none                 none            none
+              1958 100 none                 none            none
+              1959 100 none                 none            none
+              1960 100 none                 none            none
+              1961 100 none                 none            32-36,44,49,64,92,
+                                                            297-299
+              1962 100 none                 none            none
+              1963 100 none                 none            252,259-260
+              1964 100 none                 none            none
+              1965 100 none                 none            166
+              1966 100 none                 none            none
+              1967 100 none                 none            71
+              1968 100 none                 none            none
+              1969 100 none                 none            none
+              1970 100 none                 none            none
+              1971 100 none                 none            none
+              1972 100 none                 none            none
+              1973 100 none                 none            none
+              1974 100 none                 none            none
+              1975 100 none                 none            251-254
+              1976 100 none                 none            none
+              1977 100 none                 none            none
+              1978 100 none                 none            none
+              1979 100 none                 none            230-233,278-283,365
+              1980  87 11-27,41-44,199-229  none            241-244
+              1981  98 263-271              none            none
+              1982  89 1-6,127-143,297-303, none            364
+                       340-353
+              1983 100 none                 none            61
+              1984 100 none                 none            none
+              1985 100 none                 none            none
+              1986 100 none                 none            none
+              1987 100 none                 none            none
+              1988 100 none                 none            none
+              1989 100 none                 none            none
+              1990 100 none                 none            none
+              1991 100 none                 none            none
+              1992 100 none                 none            none
+              1993  98 1-9                  none            none
+              1994 100 none                 none            none
+              1995 100 none                 none            none
+              1996 100 none                 none            none
+              1997 100 none                 none            none
+              1998 100 none                 none            none
+              1999 100 none                 none            none
+              2000  99 1-5                  none            none
+              2001 100 none                 none            none
+              2002 100 none                 none            none
+              2003 100 none                 none            none
+              2004 100 none                 none            none
+              2005 100 none                 none            none
+              2006 100 none                 none            none
+              2007 100 none                 none            none
+              2008 100 none                 none            none
+              2009  99 132-133              (11)336-(00)337 none
+              2010 100 none                 none            none
+              2011 100 none                 none            none
+              2012  99 360-361,363-365      (14)333-(00)334
+              2013  96 1-2,115-116,307-310, (14)204-(11)205 none
+                       314-322
+              2014 100 none                 (02)264-(00)265 none

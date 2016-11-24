@@ -27,7 +27,7 @@
       <x>0</x>
       <y>0</y>
       <width>302</width>
-      <height>103</height>
+      <height>132</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -194,6 +194,13 @@
         </layout>
        </item>
       </layout>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_2">
+       <property name="text">
+        <string>Extract Extreme Values</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </widget>
