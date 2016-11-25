@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'draft2.ui'
+# Form implementation generated from reading ui file 'C:\Users\georg\Documents\GitHub\PyEVA\QtGUI\MainWindow.ui'
 #
 # Created by: PyQt4 UI code generator 4.11.4
 #
@@ -563,9 +563,11 @@ class Ui_MainWindow(object):
         self.horizontalLayout = QtGui.QHBoxLayout()
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
         self.pushButton_3 = QtGui.QPushButton(self.centralwidget)
+        self.pushButton_3.setEnabled(False)
         self.pushButton_3.setObjectName(_fromUtf8("pushButton_3"))
         self.horizontalLayout.addWidget(self.pushButton_3)
         self.pushButton_4 = QtGui.QPushButton(self.centralwidget)
+        self.pushButton_4.setEnabled(False)
         self.pushButton_4.setObjectName(_fromUtf8("pushButton_4"))
         self.horizontalLayout.addWidget(self.pushButton_4)
         self.verticalLayout.addLayout(self.horizontalLayout)
@@ -597,6 +599,7 @@ class Ui_MainWindow(object):
         self.label_5.setObjectName(_fromUtf8("label_5"))
         self.horizontalLayout_3.addWidget(self.label_5)
         self.comboBox_2 = QtGui.QComboBox(self.centralwidget)
+        self.comboBox_2.setEnabled(False)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -614,6 +617,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_3.addWidget(self.comboBox_2)
         self.verticalLayout_2.addLayout(self.horizontalLayout_3)
         self.checkBox = QtGui.QCheckBox(self.centralwidget)
+        self.checkBox.setEnabled(False)
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Lucida Console"))
         font.setPointSize(12)
@@ -652,6 +656,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_4.addWidget(self.comboBox)
         self.verticalLayout_2.addLayout(self.horizontalLayout_4)
         self.pushButton_5 = QtGui.QPushButton(self.centralwidget)
+        self.pushButton_5.setEnabled(False)
         self.pushButton_5.setObjectName(_fromUtf8("pushButton_5"))
         self.verticalLayout_2.addWidget(self.pushButton_5)
         self.verticalLayout_5.addLayout(self.verticalLayout_2)
@@ -673,34 +678,14 @@ class Ui_MainWindow(object):
         self.label_6.setObjectName(_fromUtf8("label_6"))
         self.verticalLayout_4.addWidget(self.label_6)
         self.pushButton_6 = QtGui.QPushButton(self.centralwidget)
+        self.pushButton_6.setEnabled(False)
         self.pushButton_6.setObjectName(_fromUtf8("pushButton_6"))
         self.verticalLayout_4.addWidget(self.pushButton_6)
         self.pushButton_7 = QtGui.QPushButton(self.centralwidget)
+        self.pushButton_7.setEnabled(False)
         self.pushButton_7.setObjectName(_fromUtf8("pushButton_7"))
         self.verticalLayout_4.addWidget(self.pushButton_7)
         self.verticalLayout_5.addLayout(self.verticalLayout_4)
-        self.label.raise_()
-        self.pushButton.raise_()
-        self.pushButton_2.raise_()
-        self.label_2.raise_()
-        self.pushButton_3.raise_()
-        self.pushButton_4.raise_()
-        self.label_3.raise_()
-        self.pushButton_5.raise_()
-        self.checkBox.raise_()
-        self.label_4.raise_()
-        self.comboBox.raise_()
-        self.comboBox.raise_()
-        self.label_5.raise_()
-        self.comboBox_2.raise_()
-        self.label_5.raise_()
-        self.pushButton_5.raise_()
-        self.label_6.raise_()
-        self.pushButton_6.raise_()
-        self.pushButton_7.raise_()
-        self.line.raise_()
-        self.line_2.raise_()
-        self.line_3.raise_()
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtGui.QStatusBar(MainWindow)
         self.statusbar.setSizeGripEnabled(True)
@@ -757,10 +742,26 @@ class Ui_MainWindow(object):
         self.toolBar.addAction(self.actionHelp)
         self.toolBar.addAction(self.actionExit)
 
-        self.actionExit.triggered.connect(sys.exit)
-
         self.retranslateUi(MainWindow)
         QtCore.QObject.connect(self.checkBox, QtCore.SIGNAL(_fromUtf8("toggled(bool)")), self.comboBox.setEnabled)
+        QtCore.QObject.connect(self.pushButton_5, QtCore.SIGNAL(_fromUtf8("clicked(bool)")), self.pushButton_6.setDisabled)
+        QtCore.QObject.connect(self.pushButton_5, QtCore.SIGNAL(_fromUtf8("clicked(bool)")), self.pushButton_7.setDisabled)
+        QtCore.QObject.connect(self.pushButton, QtCore.SIGNAL(_fromUtf8("clicked(bool)")), self.pushButton_6.setEnabled)
+        QtCore.QObject.connect(self.pushButton, QtCore.SIGNAL(_fromUtf8("clicked(bool)")), self.pushButton_7.setEnabled)
+        QtCore.QObject.connect(self.pushButton_2, QtCore.SIGNAL(_fromUtf8("clicked(bool)")), self.pushButton_6.setEnabled)
+        QtCore.QObject.connect(self.pushButton_2, QtCore.SIGNAL(_fromUtf8("clicked(bool)")), self.pushButton_7.setEnabled)
+        QtCore.QObject.connect(self.pushButton, QtCore.SIGNAL(_fromUtf8("clicked(bool)")), self.pushButton_3.setDisabled)
+        QtCore.QObject.connect(self.pushButton, QtCore.SIGNAL(_fromUtf8("clicked(bool)")), self.pushButton_4.setDisabled)
+        QtCore.QObject.connect(self.pushButton_2, QtCore.SIGNAL(_fromUtf8("clicked(bool)")), self.pushButton_4.setDisabled)
+        QtCore.QObject.connect(self.pushButton_2, QtCore.SIGNAL(_fromUtf8("clicked(bool)")), self.pushButton_3.setDisabled)
+        QtCore.QObject.connect(self.pushButton_3, QtCore.SIGNAL(_fromUtf8("clicked(bool)")), self.pushButton_6.setEnabled)
+        QtCore.QObject.connect(self.pushButton_3, QtCore.SIGNAL(_fromUtf8("clicked(bool)")), self.pushButton_7.setEnabled)
+        QtCore.QObject.connect(self.pushButton_4, QtCore.SIGNAL(_fromUtf8("clicked(bool)")), self.pushButton_6.setEnabled)
+        QtCore.QObject.connect(self.pushButton_4, QtCore.SIGNAL(_fromUtf8("clicked(bool)")), self.pushButton_7.setEnabled)
+        QtCore.QObject.connect(self.pushButton_3, QtCore.SIGNAL(_fromUtf8("clicked(bool)")), self.pushButton_5.setDisabled)
+        QtCore.QObject.connect(self.pushButton_4, QtCore.SIGNAL(_fromUtf8("clicked(bool)")), self.pushButton_5.setDisabled)
+        QtCore.QObject.connect(self.pushButton, QtCore.SIGNAL(_fromUtf8("clicked(bool)")), self.pushButton_5.setEnabled)
+        QtCore.QObject.connect(self.pushButton_2, QtCore.SIGNAL(_fromUtf8("clicked(bool)")), self.pushButton_5.setEnabled)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -793,7 +794,7 @@ class Ui_MainWindow(object):
         self.actionSave.setToolTip(_translate("MainWindow", "Save", None))
         self.actionSave.setStatusTip(_translate("MainWindow", "Save project", None))
         self.actionOpen.setText(_translate("MainWindow", "Open", None))
-        self.actionOpen.setStatusTip(_translate("MainWindow", "Open esxisting project", None))
+        self.actionOpen.setStatusTip(_translate("MainWindow", "Open existing project", None))
         self.actionSettings.setText(_translate("MainWindow", "Settings", None))
         self.actionSettings.setStatusTip(_translate("MainWindow", "Edit settings", None))
         self.actionExit.setText(_translate("MainWindow", "Exit", None))
@@ -801,7 +802,7 @@ class Ui_MainWindow(object):
         self.actionHelp.setText(_translate("MainWindow", "Help", None))
         self.actionHelp.setStatusTip(_translate("MainWindow", "Open help dialog", None))
 
-import bo_res_rc
+import res_rc
 
 if __name__ == "__main__":
     import sys

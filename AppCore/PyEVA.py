@@ -1,6 +1,7 @@
-from QtGUI.draft2 import Ui_MainWindow
+from MainWindow import Ui_MainWindow
 from PyQt4 import QtGui, QtCore
 import sys
+import os
 
 
 class PyEVAMainWindow(QtGui.QMainWindow, Ui_MainWindow):
@@ -11,12 +12,12 @@ class PyEVAMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.actionNew.triggered.connect(self.mwNew)
 
     def mwExit(self):
-        print('Exiting the application')
+        sys.stdout.write('Exiting the application')
         sys.exit(0)
 
     def mwNew(self):
-        print('Starting new PyEVA instance')
-        main()
+        sys.stdout.write('Starting new PyEVA instance')
+        raise RuntimeError('How do I run the same instance?')
 
 def main():
     app = QtGui.QApplication(sys.argv)
