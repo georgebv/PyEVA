@@ -1,0 +1,1 @@
+D:\Python35-32\Lib\site-packages\PyQt4\pyuic4.bat -x draft2.ui -o draft2.py

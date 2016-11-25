@@ -1,0 +1,1 @@
+D:\Python34\Lib\site-packages\PyQt4\pyrcc4.exe -py3 bo_res.qrc -o bo_res_rc.py
