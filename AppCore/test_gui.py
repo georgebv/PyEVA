@@ -42,8 +42,14 @@ class Window(QtGui.QMainWindow):
         self.show()
 
     def close_application(self):
-        print('Closed')
-        sys.exit()
+        choice = QtGui.QMessageBox.question(self, 'Quitting the application',
+                                            'Do you want to quit?', QtGui.QMessageBox.Yes |
+                                            QtGui.QMessageBox.No)
+        if choice == QtGui.QMessageBox.Yes:
+            print('Commencing exit')
+            sys.exit()
+        else:
+            pass
 
 def main():
     app = QtGui.QApplication(sys.argv)
