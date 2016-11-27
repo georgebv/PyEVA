@@ -9,7 +9,7 @@ class Window(QtGui.QMainWindow):
         super(Window, self).__init__()
         self.setGeometry(50, 50, 500, 300)
         self.setWindowTitle('PyEVA')
-        self.setWindowIcon(QtGui.QIcon(r'..\AppCore\Resources\lambda.png'))
+        self.setWindowIcon(QtGui.QIcon(r'C:\Users\georg\Documents\GitHub\PyEVA\QtGUI\images\lambda.png'))
 
         extractAction = QtGui.QAction('&Exit', self)
         extractAction.setShortcut('Ctrl+Q')
@@ -31,13 +31,17 @@ class Window(QtGui.QMainWindow):
         btn.move(0, 100)
 
         extractAction = QtGui.QAction(QtGui.QIcon(
-            r'..\AppCore\Resources\lambda.png'),
+            r'C:\Users\georg\Documents\GitHub\PyEVA\QtGUI\images\lambda.png'),
             'Press lambda',
             self)
         extractAction.triggered.connect(self.close_application)
 
         self.toolBar = self.addToolBar('Wave length')
         self.toolBar.addAction(extractAction)
+
+        checkBox = QtGui.QCheckBox('Enlarge window', self)
+        checkBox.stateChanged.connect(self.enlarge_window)
+        checkBox.move(100, 25)
 
         self.show()
 
@@ -50,6 +54,12 @@ class Window(QtGui.QMainWindow):
             sys.exit()
         else:
             pass
+
+    def enlarge_window(self, state):
+        if state == QtCore.Qt.Checked:
+            self.setGeometry(50, 50, 1000, 600)
+        else:
+            self.setGeometry(50, 50, 500, 300)
 
 def main():
     app = QtGui.QApplication(sys.argv)

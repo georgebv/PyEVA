@@ -3,13 +3,8 @@ from PyQt4 import QtGui, QtCore
 import pandas as pd
 import pickle
 import sys
-import os
-
-
-# Setup current project state (a global variable, must be declared as global in each function / method)
-# First item - GUI state, second item - internal EVA state
-#  Store all global variable in PyEVA_state
-PyEVA_state = [['save_name', 'None'], ['Series', 'EVA_class']]
+import subprocess
+import  multiprocessing
 
 
 class PyEVAMainWindow(QtGui.QMainWindow, Ui_MainWindow):
@@ -36,18 +31,21 @@ class PyEVAMainWindow(QtGui.QMainWindow, Ui_MainWindow):
     # Toolbar functions
 
     def mwNew(self):
-        # TODO: make <New> method work
-        print('Starting new PyEVA instance')
-        QtGui.QMessageBox.warning(self, 'Warning', 'New project option is not yet implemented')
+        try:
+            print('Spawning a new PyEVA process')
+            subprocess.Popen('PyEVa.exe', close_fds=True)
+        except:
+            print('WARNING: The <New> method currently does not work through Python\n'
+                  'If running through executable, make sure that the PyEVA.exe'
+                  ' is present in the application root directory')
 
     def mwSave(self):
         global PyEVA_state
-        print('Current save_name is: {}'.format(PyEVA_state[0][0]))
         if PyEVA_state[0][0] == 'save_name':
             save_name = QtGui.QFileDialog.getSaveFileName(self, 'Save current PyEVA project',
                                                           '/project_name', '*.PyEVA')
             if save_name != '':
-                print('Passed project save path at: {}'.format(save_name))
+                print('Dumping current project state at: {}'.format(save_name))
                 PyEVA_state[0][0] = save_name
                 with open(save_name, 'wb') as f:
                     pickle.dump(PyEVA_state, f)
@@ -55,10 +53,12 @@ class PyEVAMainWindow(QtGui.QMainWindow, Ui_MainWindow):
             else:
                 pass
         else:
-            print('Saved project at: {}'.format(PyEVA_state[0][0]))
+            print('Project state dumped at: {}'.format(PyEVA_state[0][0]))
             with open(PyEVA_state[0][0], 'wb') as f:
                 pickle.dump(PyEVA_state, f)
-            QtGui.QMessageBox.information(self, 'Save successful', 'Project saved successfully')
+            QtGui.QMessageBox.information(self, 'Save successful', 'Project {} saved successfully'.format(
+                PyEVA_state[0][0].split('/')[-1].split('.')[0]
+            ))
 
     def mwOpen(self):
         global PyEVA_state
@@ -95,53 +95,83 @@ class PyEVAMainWindow(QtGui.QMainWindow, Ui_MainWindow):
     def mwParse(self):
         global PyEVA_state
         # Todo: make the <Parse> method work
+        # PyEVA_state[1][1] = 'Extremes'
+        self.mwUI_activator()
         QtGui.QMessageBox.warning(self, 'Warning', 'Parsing module is not yet implemented')
 
     def mwLoadSeries(self):
         global PyEVA_state
-        # TODO: make proper data import from csv
         file_name = QtGui.QFileDialog.getOpenFileName(self, 'Open file', '/PyEVA parsed series', '*.csv')
         if file_name != '':
             print('Passed file at {}'.format(file_name))
-            data = pd.read_csv(file_name)
-            # make data into a DataFrame with datetime index and regular columns
-            # PyEVA_state[1][0] = data
-        else:
-            pass
+            data = pd.read_csv(file_name, index_col=0)
+            data.index = pd.to_datetime(data.index)
+            PyEVA_state[1][0] = data
+            PyEVA_state[1][1] = 'Extremes'
+        self.mwUI_activator()
 
     def mwFit(self):
         global PyEVA_state
-        # Do some fitting here
+        # Do some fitting here (state changing)
         QtGui.QMessageBox.information(self, 'Fit successful', 'Distribution fit complete')
 
     # Auxiliary functions
 
     def mwUI_activator(self):
         global PyEVA_state
+        series = '☐'
+        extremes = '☐'
+        fit = '☐'
         if PyEVA_state[0][0] != 'save_name':
             self.setWindowTitle(' '.join(['PyEVA -', 'project', PyEVA_state[0][0].split('/')[-1].split('.')[0]]))
-        if PyEVA_state[1][0] != 'Series':
+        if type(PyEVA_state[1][0]) != type('Series'):
             self.pushButton_3.setEnabled(True)
             self.pushButton_4.setEnabled(True)
+            series = '☒'
         else:
             self.pushButton_3.setEnabled(False)
             self.pushButton_4.setEnabled(False)
-        if PyEVA_state[1][1] != 'EVA_class':
+        if type(PyEVA_state[1][1]) != type('Extremes'):
             self.comboBox_2.setEnabled(True)
             self.checkBox.setEnabled(True)
             self.pushButton_5.setEnabled(True)
             self.label_4.setEnabled(True)
             self.label_5.setEnabled(True)
+            extremes = '☒'
         else:
             self.comboBox_2.setEnabled(False)
             self.checkBox.setEnabled(False)
             self.pushButton_5.setEnabled(False)
             self.label_4.setEnabled(False)
             self.label_5.setEnabled(False)
+        PyEVA_state[0][1] = '''Extreme Value Analysis summary:
 
 
+    > Time series loaded: {series}
+
+
+    > Extreme values extracted: {extremes}
+
+
+    > Distribution fit: {fit}
+            '''.format(series=series, extremes=extremes, fit=fit)
+        self.plainTextEdit.setPlainText(PyEVA_state[0][1])
 
 def main():
+    # Initialize global program state object ([0] - GUI, [1] - EVA)
+    global PyEVA_state
+    status_pane = '''Extreme Value Analysis summary:
+
+
+        > Time series loaded: {series}
+
+
+        > Extreme values extracted: {extremes}
+
+
+        > Distribution fit: {fit}
+    '''.format(series='☐', extremes='☐', fit='☐')
+    PyEVA_state = [['save_name', status_pane], ['Series', 'Extremes', 'Fit'], 'EVA_class']
     app = QtGui.QApplication(sys.argv)
     MainWindow = PyEVAMainWindow()
     MainWindow.show()
