@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Users\georg\Documents\GitHub\PyEVA\QtGUI\MainWindow.ui'
+# Form implementation generated from reading ui file 'MainWindow.ui'
 #
 # Created by: PyQt4 UI code generator 4.11.4
 #
@@ -25,7 +25,7 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(896, 682)
+        MainWindow.resize(1120, 705)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -688,6 +688,10 @@ class Ui_MainWindow(object):
         self.pushButton_5.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.pushButton_5.setObjectName(_fromUtf8("pushButton_5"))
         self.verticalLayout_2.addWidget(self.pushButton_5)
+        self.pushButton_10 = QtGui.QPushButton(self.centralwidget)
+        self.pushButton_10.setEnabled(False)
+        self.pushButton_10.setObjectName(_fromUtf8("pushButton_10"))
+        self.verticalLayout_2.addWidget(self.pushButton_10)
         self.verticalLayout_5.addLayout(self.verticalLayout_2)
         spacerItem4 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
         self.verticalLayout_5.addItem(spacerItem4)
@@ -729,6 +733,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_5.addLayout(self.verticalLayout_5)
         self.plainTextEdit = QtGui.QPlainTextEdit(self.centralwidget)
         self.plainTextEdit.setEnabled(True)
+        self.plainTextEdit.setMinimumSize(QtCore.QSize(500, 0))
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Lucida Console"))
         font.setPointSize(12)
@@ -815,11 +820,11 @@ class Ui_MainWindow(object):
         self.label.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\">Import time series data</p></body></html>", None))
         self.pushButton.setText(_translate("MainWindow", "Parse data", None))
         self.pushButton_2.setText(_translate("MainWindow", "Load existing", None))
-        self.pushButton_8.setText(_translate("MainWindow", "Plot time series", None))
+        self.pushButton_8.setText(_translate("MainWindow", "Display time series plot", None))
         self.label_2.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\">Extract extreme values from time series</p></body></html>", None))
         self.pushButton_3.setText(_translate("MainWindow", "Block maxima", None))
         self.pushButton_4.setText(_translate("MainWindow", "Peaks over threshold", None))
-        self.pushButton_9.setText(_translate("MainWindow", "Plot extracted extreme values", None))
+        self.pushButton_9.setText(_translate("MainWindow", "Display extracted extreme values plot", None))
         self.label_3.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\">Fit distribution to extreme values</p></body></html>", None))
         self.label_5.setText(_translate("MainWindow", "Select distribution", None))
         self.comboBox_2.setItemText(0, _translate("MainWindow", "Generalized Pareto", None))
@@ -831,6 +836,7 @@ class Ui_MainWindow(object):
         self.comboBox.setItemText(1, _translate("MainWindow", "1000", None))
         self.comboBox.setItemText(2, _translate("MainWindow", "10000", None))
         self.pushButton_5.setText(_translate("MainWindow", "Fit", None))
+        self.pushButton_10.setText(_translate("MainWindow", "Display return values plot", None))
         self.label_6.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\">Export EVA output</p></body></html>", None))
         self.pushButton_6.setText(_translate("MainWindow", "Export plots", None))
         self.pushButton_7.setText(_translate("MainWindow", "Export EVA summary report", None))

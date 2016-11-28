@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['PyEVA.py'],
-             pathex=['C:\\Users\\georg\\Documents\\GitHub\\PyEVA\\AppCore'],
+             pathex=['C:\\Users\\GRBH.COWI.001\\Desktop\\GitHub repositories\\PyEVA\\AppCore'],
              binaries=None,
              datas=None,
              hiddenimports=[],
@@ -23,7 +23,7 @@ exe = EXE(pyz,
           debug=False,
           strip=False,
           upx=True,
-          console=True )
+          console=True , icon='lambda.ico')
 coll = COLLECT(exe,
                a.binaries,
                a.zipfiles,

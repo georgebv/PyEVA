@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>896</width>
-    <height>682</height>
+    <width>1120</width>
+    <height>705</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -578,7 +578,7 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
              <bool>false</bool>
             </property>
             <property name="text">
-             <string>Plot time series</string>
+             <string>Display time series plot</string>
             </property>
            </widget>
           </item>
@@ -679,7 +679,7 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
              <bool>false</bool>
             </property>
             <property name="text">
-             <string>Plot extracted extreme values</string>
+             <string>Display extracted extreme values plot</string>
             </property>
            </widget>
           </item>
@@ -923,6 +923,16 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_10">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>Display return values plot</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </item>
         <item>
@@ -1024,6 +1034,12 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
        <widget class="QPlainTextEdit" name="plainTextEdit">
         <property name="enabled">
          <bool>true</bool>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>500</width>
+          <height>0</height>
+         </size>
         </property>
         <property name="font">
          <font>
