@@ -22,7 +22,21 @@ class Window(QtGui.QMainWindow):
         fileMenu = mainMenu.addMenu('&File')
         fileMenu.addAction(extractAction)
 
+        self.progress = QtGui.QProgressBar(self)
+        self.progress.setGeometry(200, 80, 250, 20)
+        self.btn = QtGui.QPushButton('Download', self)
+        self.btn.move(200, 120)
+        self.btn.clicked.connect(self.download)
+
+
         self.home()
+
+    def download(self):
+        self.completed = 0
+
+        while self.completed < 100:
+            self.completed += 0.0001
+            self.progress.setValue(self.completed)
 
     def home(self):
         btn = QtGui.QPushButton('Quit', self)
@@ -38,12 +52,34 @@ class Window(QtGui.QMainWindow):
 
         self.toolBar = self.addToolBar('Wave length')
         self.toolBar.addAction(extractAction)
+        fontChoice = QtGui.QAction('Font', self)
+        fontChoice.triggered.connect(self.font_choice)
+        self.toolBar.addAction(fontChoice)
 
         checkBox = QtGui.QCheckBox('Enlarge window', self)
         checkBox.stateChanged.connect(self.enlarge_window)
         checkBox.move(100, 25)
 
+        self.styleChoice = QtGui.QLabel('Windows 10', self)
+        comboBox = QtGui.QComboBox(self)
+        comboBox.addItem('motif')
+        comboBox.addItem('Windows')
+        comboBox.addItem('Plastique')
+        comboBox.move(50, 250)
+        self.styleChoice.move(50, 150)
+        comboBox.activated[str].connect(self.style_choice)
+
         self.show()
+
+    def font_choice(self):
+        font, valid = QtGui.QFontDialog.getFont()
+        if valid:
+            self.styleChoice.setFont(font)
+
+
+    def style_choice(self, text):
+        self.styleChoice.setText(text)
+        QtGui.QApplication.setStyle(QtGui.QStyleFactory.create(text))
 
     def close_application(self):
         choice = QtGui.QMessageBox.question(self, 'Quitting the application',
