@@ -19,6 +19,10 @@
   <property name="windowTitle">
    <string>Time series parser</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="res.qrc">
+    <normaloff>:/images/lambda.png</normaloff>:/images/lambda.png</iconset>
+  </property>
   <property name="styleSheet">
    <string notr="true">QToolTip
 {

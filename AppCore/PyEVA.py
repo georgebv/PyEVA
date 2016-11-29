@@ -187,6 +187,9 @@ class PyEVAParseDialog(QtGui.QDialog, Ui_ParseDialog):
         file_name = QtGui.QFileDialog.getOpenFileName(self, 'Open file', '/data')
         if file_name != '':
             print('Passed file at {}'.format(file_name))
+            self.tableWidget.clear()
+            self.tableWidget.setColumnCount(0)
+            self.tableWidget.setRowCount(0)
             with open(file_name, 'r') as f:
                 app_state[-1][0] = [line for line in f.readlines()]
             if len(app_state[-1][0]) > 100:
@@ -195,28 +198,61 @@ class PyEVAParseDialog(QtGui.QDialog, Ui_ParseDialog):
                 last = ''.join(app_state[-1][0][-50:])
                 self.plainTextEdit.setPlainText('\n'.join([first, mid, last]))
             else:
-                self.plainTextEdit.setPlainText('\n'.join(''.join(app_state[-1][0])))
-
+                self.plainTextEdit.setPlainText(''.join(app_state[-1][0]))
 
     def pdParse(self):
         global app_state
         if app_state[-1][0] != 'Raw data':
             print('Parsing loaded data')
             separator = self.lineEdit.text()
-            if self.checkBox.checkState():
-                # TODO: parse labels
-                pass
+
+            ##################################################
+            # Parsing with dates
+            ##################################################
+
+            if self.checkBox_2.checkState():
+                # TODO: parse with dates (again, with and without headers)
+                # Parse with headers
+                if self.checkBox.checkState():
+                    pass
+                # Parse without headers
+                else:
+                    pass
+                # data = dpParse(file_name, separator=self.lineEdit.text())
+                # for i in range(len(data)):
+                #     self.tableWidget.setVerticalHeaderItem(i, QtGui.QTableWidgetItem(dates[i]))
+                # for i in range(len(headers)):
+                #     self.tableWidget.setHorizontalHeaderItem(i, QtGui.QTableWidgetItem(headers[i]))
+
+            ##################################################
+            # Parsing without dates
+            ##################################################
+
             else:
-                # TODO: parse to DataFrame
-                data = [line.split(separator) for line in app_state[-1][0]]
-                self.tableWidget.setRowCount(50)
-                self.tableWidget.setColumnCount(len(data[50]))
-                from PyQt4 import QtCore
-                for i, row in enumerate(data[0:50]):
-                    for j, col in enumerate(row):
-                        self.tableWidget.setItem(i, j, QtGui.QTableWidgetItem(col))
-        # data = dpParse(file_name, separator=self.lineEdit.text())
-        pass
+                # Parse with headers
+                if self.checkBox.checkState():
+                    headers_row = self.spinBox.value() - 1
+                    values_row = self.spinBox_2.value() - 1
+                    data = [line.split(separator) for line in app_state[-1][0]]
+                    headers = data[headers_row]
+                    # TODO: split headers properly (different separators)
+                    data = data[values_row:]
+                    self.tableWidget.setRowCount(50)
+                    self.tableWidget.setColumnCount(len(data[50]))
+                    for i in range(len(headers)):
+                        self.tableWidget.setHorizontalHeaderItem(i, QtGui.QTableWidgetItem(headers[i]))
+                    for i, row in enumerate(data[0:50]):
+                        for j, col in enumerate(row):
+                            self.tableWidget.setItem(i, j, QtGui.QTableWidgetItem(col))
+                # Parse without headers
+                else:
+                    values_row = self.spinBox_2.value() - 1
+                    data = [line.split(separator) for line in app_state[-1][0]][values_row:]
+                    self.tableWidget.setRowCount(50)
+                    self.tableWidget.setColumnCount(len(data[50]))
+                    for i, row in enumerate(data[0:50]):
+                        for j, col in enumerate(row):
+                            self.tableWidget.setItem(i, j, QtGui.QTableWidgetItem(col))
 
 def main():
     # Initialize global program state object ([0] - GUI, [1] - EVA)

@@ -27,6 +27,9 @@ class Ui_Dialog(object):
         Dialog.setObjectName(_fromUtf8("Dialog"))
         Dialog.resize(1142, 682)
         Dialog.setMinimumSize(QtCore.QSize(1142, 682))
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/images/lambda.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        Dialog.setWindowIcon(icon)
         Dialog.setStyleSheet(_fromUtf8("QToolTip\n"
 "{\n"
 "     border: 1px solid black;\n"
