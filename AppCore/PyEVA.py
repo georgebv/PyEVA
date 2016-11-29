@@ -1,4 +1,7 @@
 from MainWindow import Ui_MainWindow
+from ParseDialog import Ui_Dialog as Ui_ParseDialog
+from data_parser import dpParse
+
 from PyQt4 import QtGui
 import pandas as pd
 import pickle
@@ -98,9 +101,13 @@ class PyEVAMainWindow(QtGui.QMainWindow, Ui_MainWindow):
     def mwParse(self):
         global app_state
         # Todo: make the <Parse> method work
-        # app_state[1][1] = 'Extremes'
+        print('Opening the parser dialog window')
+        app_state[1][1] = 'Extremes'
+        parseUI = PyEVAParseDialog()
+        parseUI.show()
+        print('Parser dialog window closed with exit status {}'.format(parseUI.exec()))
         self.mwUI_update()
-        QtGui.QMessageBox.warning(self, 'Warning', 'Parsing module is not yet implemented')
+        # QtGui.QMessageBox.warning(self, 'Warning', 'Parsing module is not yet implemented')
 
     def mwLoadSeries(self):
         global app_state
@@ -162,11 +169,39 @@ class PyEVAMainWindow(QtGui.QMainWindow, Ui_MainWindow):
             '''.format(series=series, extremes=extremes, fit=fit)
         self.plainTextEdit.setPlainText(app_state[0][1])
 
+
+class PyEVAParseDialog(QtGui.QDialog, Ui_ParseDialog):
+
+    global app_state
+
+    def __init__(self, parent=None):
+        QtGui.QWidget.__init__(self, parent)
+        self.setupUi(self)
+
+        # Map buttons to functions
+        self.pushButton_2.clicked.connect(self.pdLoad)
+
+    def pdLoad(self):
+        global app_state
+        file_name = QtGui.QFileDialog.getOpenFileName(self, 'Open file', '/data')
+        if file_name != '':
+            print('Passed file at {}'.format(file_name))
+            with open(file_name, 'r') as f:
+                app_state[-1] = [line for line in f.readlines()]
+            first = ''.join(app_state[-1][0:25])
+            mid = 'First 25 rows\n' + len((app_state[-1][0:25][-1])) * '-' + '\nLast 25 rows\n'
+            last = ''.join(app_state[-1][-25:])
+            self.plainTextEdit.setPlainText('\n'.join([first, mid, last]))
+
+    def pdParse(self):
+        # data = dpParse(file_name, separator=self.lineEdit.text())
+        pass
+
 def main():
     # Initialize global program state object ([0] - GUI, [1] - EVA)
     global app_state
 
-    app_state = [['save_name', 'status_pane'], ['Series', 'Extremes', 'Fit'], 'EVA_class']
+    app_state = [['save_name', 'status_pane'], ['Series', 'Extremes', 'Fit'], 'EVA_class', 'Raw file']
     app = QtGui.QApplication(sys.argv)
     coreUI = PyEVAMainWindow()
     coreUI.show()

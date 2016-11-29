@@ -3,11 +3,12 @@ import numpy as np
 import datetime
 
 
-def simple_csv(file, headers=None, remove_rows=0, year=(0, '1-4'), month=(1, 'all'), day=(2, 'all'), hour=(3, 'all'),
-               minute=None, second=None):
+def dpParse(file, separator=',', headers=None, remove_rows=0, year=(0, '1-4'), month=(1, 'all'), day=(2, 'all'),
+               hour=(3, 'all'), minute=None, second=None):
+
     with open(file, 'r') as f:
         data = [line.rstrip() for line in f.readlines()]
-    data = [line.split(',') for line in data]
+    data = [line.split(separator) for line in data]
     if headers is not None:
         ## TODO: implement header extraction
         pass
@@ -97,8 +98,8 @@ def simple_csv(file, headers=None, remove_rows=0, year=(0, '1-4'), month=(1, 'al
     frame.columns.names = ['Data classes']
     return frame
 
-data = simple_csv(file=r'.\test_data\EVA_stress\rqh0822a.csv')
-data.to_csv(r'.\test_data\EVA_stress\parsed.csv')
-
-data2 = pd.read_csv(r'.\test_data\EVA_stress\parsed.csv', index_col=0)
-data2.index = pd.to_datetime(data2.index)
+# data = dpParse(file=r'.\test_data\EVA_stress\rqh0822a.csv')
+# data.to_csv(r'.\test_data\EVA_stress\parsed.csv')
+#
+# data2 = pd.read_csv(r'.\test_data\EVA_stress\parsed.csv', index_col=0)
+# data2.index = pd.to_datetime(data2.index)
