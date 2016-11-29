@@ -189,10 +189,14 @@ class PyEVAParseDialog(QtGui.QDialog, Ui_ParseDialog):
             print('Passed file at {}'.format(file_name))
             with open(file_name, 'r') as f:
                 app_state[-1][0] = [line for line in f.readlines()]
-            first = ''.join(app_state[-1][0][0:25])
-            mid = 'First 25 rows\n' + len((app_state[-1][0][0:25][-1])) * '-' + '\nLast 25 rows\n'
-            last = ''.join(app_state[-1][0][-25:])
-            self.plainTextEdit.setPlainText('\n'.join([first, mid, last]))
+            if len(app_state[-1][0]) > 100:
+                first = ''.join(app_state[-1][0][0:50])
+                mid = 'First 50 rows\n' + len((app_state[-1][0][0:50][-1])) * '-' + '\nLast 50 rows\n'
+                last = ''.join(app_state[-1][0][-50:])
+                self.plainTextEdit.setPlainText('\n'.join([first, mid, last]))
+            else:
+                self.plainTextEdit.setPlainText('\n'.join(''.join(app_state[-1][0])))
+
 
     def pdParse(self):
         global app_state

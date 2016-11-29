@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Users\georg\Documents\GitHub\PyEVA\QtGUI\ParseDialog.ui'
+# Form implementation generated from reading ui file 'ParseDialog.ui'
 #
 # Created by: PyQt4 UI code generator 4.11.4
 #
@@ -25,8 +25,8 @@ except AttributeError:
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName(_fromUtf8("Dialog"))
-        Dialog.resize(1038, 636)
-        Dialog.setMinimumSize(QtCore.QSize(0, 0))
+        Dialog.resize(1142, 682)
+        Dialog.setMinimumSize(QtCore.QSize(1142, 682))
         Dialog.setStyleSheet(_fromUtf8("QToolTip\n"
 "{\n"
 "     border: 1px solid black;\n"
