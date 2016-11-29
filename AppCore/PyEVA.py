@@ -179,6 +179,7 @@ class PyEVAParseDialog(QtGui.QDialog, Ui_ParseDialog):
         self.setupUi(self)
 
         # Map buttons to functions
+        self.pushButton.clicked.connect(self.pdParse)
         self.pushButton_2.clicked.connect(self.pdLoad)
 
     def pdLoad(self):
@@ -187,13 +188,29 @@ class PyEVAParseDialog(QtGui.QDialog, Ui_ParseDialog):
         if file_name != '':
             print('Passed file at {}'.format(file_name))
             with open(file_name, 'r') as f:
-                app_state[-1] = [line for line in f.readlines()]
-            first = ''.join(app_state[-1][0:25])
-            mid = 'First 25 rows\n' + len((app_state[-1][0:25][-1])) * '-' + '\nLast 25 rows\n'
-            last = ''.join(app_state[-1][-25:])
+                app_state[-1][0] = [line for line in f.readlines()]
+            first = ''.join(app_state[-1][0][0:25])
+            mid = 'First 25 rows\n' + len((app_state[-1][0][0:25][-1])) * '-' + '\nLast 25 rows\n'
+            last = ''.join(app_state[-1][0][-25:])
             self.plainTextEdit.setPlainText('\n'.join([first, mid, last]))
 
     def pdParse(self):
+        global app_state
+        if app_state[-1][0] != 'Raw data':
+            print('Parsing loaded data')
+            separator = self.lineEdit.text()
+            if self.checkBox.checkState():
+                # TODO: parse labels
+                pass
+            else:
+                # TODO: parse to DataFrame
+                data = [line.split(separator) for line in app_state[-1][0]]
+                self.tableWidget.setRowCount(50)
+                self.tableWidget.setColumnCount(len(data[50]))
+                from PyQt4 import QtCore
+                for i, row in enumerate(data[0:50]):
+                    for j, col in enumerate(row):
+                        self.tableWidget.setItem(i, j, QtGui.QTableWidgetItem(col))
         # data = dpParse(file_name, separator=self.lineEdit.text())
         pass
 
@@ -201,7 +218,12 @@ def main():
     # Initialize global program state object ([0] - GUI, [1] - EVA)
     global app_state
 
-    app_state = [['save_name', 'status_pane'], ['Series', 'Extremes', 'Fit'], 'EVA_class', 'Raw file']
+    app_state = [
+        ['save_name', 'status_pane'],
+        ['Series', 'Extremes', 'Fit'],
+        'EVA_class',
+        ['Raw data', 'Parsed DataFrame']
+    ]
     app = QtGui.QApplication(sys.argv)
     coreUI = PyEVAMainWindow()
     coreUI.show()

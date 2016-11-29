@@ -874,7 +874,7 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
                <bool>false</bool>
               </property>
               <property name="text">
-               <string>1-4</string>
+               <string>0</string>
               </property>
              </widget>
             </item>
@@ -923,7 +923,7 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
                <bool>false</bool>
               </property>
               <property name="text">
-               <string>1-2</string>
+               <string>0</string>
               </property>
              </widget>
             </item>
@@ -933,7 +933,7 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
                <bool>false</bool>
               </property>
               <property name="text">
-               <string>1-2</string>
+               <string>0</string>
               </property>
              </widget>
             </item>
@@ -943,7 +943,7 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
                <bool>false</bool>
               </property>
               <property name="text">
-               <string>1-2</string>
+               <string>0</string>
               </property>
              </widget>
             </item>
@@ -966,7 +966,7 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
                <bool>false</bool>
               </property>
               <property name="text">
-               <string>1-2</string>
+               <string>0</string>
               </property>
              </widget>
             </item>
@@ -976,7 +976,7 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
                <bool>false</bool>
               </property>
               <property name="text">
-               <string>1-2</string>
+               <string>0</string>
               </property>
              </widget>
             </item>
@@ -1136,7 +1136,6 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
            </layout>
           </item>
          </layout>
-         <zorder></zorder>
          <zorder></zorder>
         </widget>
        </item>
