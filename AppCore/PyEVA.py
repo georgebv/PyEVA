@@ -1,13 +1,16 @@
 from MainWindow import Ui_MainWindow
 from ParseDialog import Ui_Dialog as Ui_ParseDialog
 from PlotSeriesDialog import Ui_Dialog as Ui_PlotSeriesDialog
-import datetime
+
 
 from PyQt4 import QtGui, QtCore
 import pandas as pd
 import pickle
 import sys
 import subprocess
+import datetime
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 class PyEVAMainWindow(QtGui.QMainWindow, Ui_MainWindow):
@@ -912,7 +915,32 @@ class PyEVAPlotSeriesDialog(QtGui.QDialog, Ui_PlotSeriesDialog):
         self.pushButton.clicked.connect(self.psdPlot)
 
     def psdPlot(self):
-        pass
+        global app_state
+        data = app_state[1][0]
+
+        # Perform basic missing values handling
+        data = data[data[self.comboBox.currentText()] != 999]
+        data = data[data[self.comboBox.currentText()] != 999.9]
+        data = data[data[self.comboBox.currentText()] != np.nan]
+        try:
+            data = data[data[self.comboBox.currentText()] != 'NaN']
+            data = data[data[self.comboBox.currentText()] != 'None']
+            data = data[data[self.comboBox.currentText()] != 'Missing']
+            data = data[data[self.comboBox.currentText()] != '']
+        except:
+            pass
+
+        x_values = pd.to_datetime(data.index)
+        y_values = data[self.comboBox.currentText()].values
+
+        with plt.style.context('bmh'):
+            plt.figure(figsize=(18, 5))
+            plt.subplot(1, 1, 1)
+            plt.scatter(x=x_values, y=y_values, s=5, marker='o', facecolor='None', edgecolors='royalblue')
+            plt.xlabel(self.lineEdit_2.text())
+            plt.ylabel(self.lineEdit_3.text())
+            plt.title(self.lineEdit.text())
+            plt.show()
 
 
 def main():
