@@ -1,8 +1,8 @@
 from MainWindow import Ui_MainWindow
 from ParseDialog import Ui_Dialog as Ui_ParseDialog
-from data_parser import dpParse
+import datetime
 
-from PyQt4 import QtGui
+from PyQt4 import QtGui, QtCore
 import pandas as pd
 import pickle
 import sys
@@ -100,14 +100,18 @@ class PyEVAMainWindow(QtGui.QMainWindow, Ui_MainWindow):
 
     def mwParse(self):
         global app_state
-        # Todo: make the <Parse> method work
         print('Opening the parser dialog window')
         app_state[1][1] = 'Extremes'
         parseUI = PyEVAParseDialog()
         parseUI.show()
         print('Parser dialog window closed with exit status {}'.format(parseUI.exec()))
         self.mwUI_update()
-        # QtGui.QMessageBox.warning(self, 'Warning', 'Parsing module is not yet implemented')
+        if type(app_state[-1][1]) != type('Parsed DataFrame'):
+            app_state[1][0] = app_state[-1][1]
+            self.pushButton_3.setEnabled(True)
+            self.pushButton_4.setEnabled(True)
+            self.pushButton_8.setEnabled(True)
+            self.pushButton_11.setEnabled(True)
 
     def mwLoadSeries(self):
         global app_state
@@ -119,6 +123,12 @@ class PyEVAMainWindow(QtGui.QMainWindow, Ui_MainWindow):
             app_state[1][0] = data
             app_state[1][1] = 'Extremes'
         self.mwUI_update()
+
+    def mwPlotSeries(self):
+        pass
+
+    def mwExportSeries(self):
+        pass
 
     def mwFit(self):
         global app_state
@@ -134,15 +144,22 @@ class PyEVAMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         series = '☐'
         extremes = '☐'
         fit = '☐'
+
         if app_state[0][0] != 'save_name':
             self.setWindowTitle(' '.join(['PyEVA -', 'project', app_state[0][0].split('/')[-1].split('.')[0]]))
+
         if type(app_state[1][0]) != type('Series'):
             self.pushButton_3.setEnabled(True)
             self.pushButton_4.setEnabled(True)
+            self.pushButton_8.setEnabled(True)
+            self.pushButton_11.setEnabled(True)
             series = '☒'
         else:
             self.pushButton_3.setEnabled(False)
             self.pushButton_4.setEnabled(False)
+            self.pushButton_8.setEnabled(False)
+            self.pushButton_11.setEnabled(False)
+
         if type(app_state[1][1]) != type('Extremes'):
             self.comboBox_2.setEnabled(True)
             self.checkBox.setEnabled(True)
@@ -179,8 +196,9 @@ class PyEVAParseDialog(QtGui.QDialog, Ui_ParseDialog):
         self.setupUi(self)
 
         # Map buttons to functions
-        self.pushButton.clicked.connect(self.pdParse)
+        self.pushButton.clicked.connect(self.pdPreview)
         self.pushButton_2.clicked.connect(self.pdLoad)
+        self.pushButton_3.clicked.connect(self.pdParse)
 
     def pdLoad(self):
         global app_state
@@ -200,24 +218,302 @@ class PyEVAParseDialog(QtGui.QDialog, Ui_ParseDialog):
             else:
                 self.plainTextEdit.setPlainText(''.join(app_state[-1][0]))
 
-    def pdParse(self):
+    def pdPreview(self):
         global app_state
         if app_state[-1][0] != 'Raw data':
             print('Parsing loaded data')
             separator = self.lineEdit.text()
+            self.tableWidget.clear()
+            self.tableWidget.setColumnCount(0)
+            self.tableWidget.setRowCount(0)
 
             ##################################################
             # Parsing with dates
             ##################################################
 
             if self.checkBox_2.checkState():
-                # TODO: parse with dates (again, with and without headers)
                 # Parse with headers
                 if self.checkBox.checkState():
-                    pass
+                    headers_row = self.spinBox.value() - 1
+                    values_row = self.spinBox_2.value() - 1
+                    headers = app_state[-1][0][headers_row]
+                    headers_separator = self.lineEdit_8.text()
+                    headers = headers.split(sep=headers_separator)
+                    headers = [x for x in headers if len(x) > 0 and x !='\n']
+
+                    data = [line.split(separator) for line in app_state[-1][0]][values_row:]
+
+                    self.tableWidget.setRowCount(50)
+                    self.tableWidget.setColumnCount(len(headers))
+
+                    if self.lineEdit_2.text() != '0':
+                        year = (self.spinBox_3.value() - 1, self.lineEdit_2.text())
+                    else:
+                        year = (self.spinBox_3.value() - 1, 'all')
+
+                    if self.lineEdit_3.text() != '0':
+                        month = (self.spinBox_4.value() - 1, self.lineEdit_3.text())
+                    else:
+                        month = (self.spinBox_4.value() - 1, 'all')
+
+                    if self.lineEdit_4.text() != '0':
+                        day = (self.spinBox_5.value() - 1, self.lineEdit_4.text())
+                    else:
+                        day = (self.spinBox_5.value() - 1, 'all')
+
+                    if self.lineEdit_5.text() != '0':
+                        hour = (self.spinBox_6.value() - 1, self.lineEdit_5.text())
+                    else:
+                        hour = (self.spinBox_6.value() - 1, 'all')
+
+                    if self.checkBox_4.checkState():
+                        if self.lineEdit_6.text() != '0':
+                            minute = (self.spinBox_7.value() - 1, self.lineEdit_6.text())
+                        else:
+                            minute = (self.spinBox_7.value() - 1, 'all')
+                    else:
+                        minute = None
+
+                    if self.checkBox_5.checkState():
+                        if self.lineEdit_7.text() != '0':
+                            second = (self.spinBox_8.value() - 1, self.lineEdit_7.text())
+                        else:
+                            second = (self.spinBox_8.value() - 1, 'all')
+                    else:
+                        second = None
+
+                    if year[1] != 'all':
+                        years = [int(x[year[0]][int(year[1].split('-')[0]) - 1:int(year[1].split('-')[1])]) for x in
+                                 data]
+                    else:
+                        years = [int(x[year[0]]) for x in data]
+
+                    if month[1] != 'all':
+                        months = [int(x[month[0]][int(month[1].split('-')[0]) - 1:int(month[1].split('-')[1])]) for x in
+                                  data]
+                    else:
+                        months = [int(x[month[0]]) for x in data]
+
+                    if day[1] != 'all':
+                        days = [int(x[day[0]][int(day[1].split('-')[0]) - 1:int(day[1].split('-')[1])]) for x in data]
+                    else:
+                        days = [int(x[day[0]]) for x in data]
+
+                    if hour[1] != 'all':
+                        hours = [int(x[hour[0]][int(hour[1].split('-')[0]) - 1:int(hour[1].split('-')[1])]) for x in
+                                 data]
+                    else:
+                        hours = [int(x[hour[0]]) for x in data]
+
+                    if minute is None:
+                        minutes = None
+                    else:
+                        if minute[1] != 'all':
+                            minutes = [int(x[minute[0]][int(minute[1].split('-')[0]) - 1:int(minute[1].split('-')[1])])
+                                       for x in data]
+                        else:
+                            minutes = [int(x[minute[0]]) for x in data]
+
+                    if second is None:
+                        seconds = None
+                    else:
+                        if second[1] != 'all':
+                            seconds = [int(x[second[0]][int(second[1].split('-')[0]) - 1:int(second[1].split('-')[1])])
+                                       for x in data]
+                        else:
+                            seconds = [int(x[second[0]]) for x in data]
+
+                    if minutes is None:
+                        dates = [
+                            datetime.datetime(
+                                year=years[i],
+                                month=months[i],
+                                day=days[i],
+                                hour=hours[i])
+                            for i in range(len(data))
+                            ]
+                    else:
+                        if seconds is None:
+                            dates = [
+                                datetime.datetime(
+                                    year=years[i],
+                                    month=months[i],
+                                    day=days[i],
+                                    hour=hours[i],
+                                    minute=minutes[i])
+                                for i in range(len(data))
+                                ]
+                        else:
+                            dates = [
+                                datetime.datetime(
+                                    year=years[i],
+                                    month=months[i],
+                                    day=days[i],
+                                    hour=hours[i],
+                                    minute=minutes[i],
+                                    second=seconds[i])
+                                for i in range(len(data))
+                                ]
+                    # frame = pd.DataFrame(data=data, index=dates)
+                    # frame.index.names = ['Date-time [UTC]']
+                    # frame.columns.names = ['Data classes']
+                    # app_state[-1][2] = frame
+
+                    for i, row in enumerate(data[0:50]):
+                        for j, col in enumerate(row):
+                            self.tableWidget.setItem(i, j, QtGui.QTableWidgetItem(str(col)))
+
+                    if data[0][-1] == '\n':
+                        data = [x[:-1] for x in data]
+                    for i in range(len(data)):
+                        for j in range(len(data[i])):
+                            try:
+                                data[i][j] = float(data[i][j])
+                            except:
+                                pass
+
+                    for i in range(len(headers)):
+                        self.tableWidget.setHorizontalHeaderItem(i, QtGui.QTableWidgetItem(headers[i]))
+                    for i in range(50):
+                        self.tableWidget.setVerticalHeaderItem(i, QtGui.QTableWidgetItem(str(dates[i])))
+
                 # Parse without headers
                 else:
-                    pass
+                    values_row = self.spinBox_2.value() - 1
+                    data = [line.split(separator) for line in app_state[-1][0]][values_row:]
+
+                    self.tableWidget.setRowCount(50)
+                    self.tableWidget.setColumnCount(len(data[50]))
+
+                    if self.lineEdit_2.text() != '0':
+                        year = (self.spinBox_3.value() - 1, self.lineEdit_2.text())
+                    else:
+                        year = (self.spinBox_3.value() - 1, 'all')
+
+                    if self.lineEdit_3.text() != '0':
+                        month = (self.spinBox_4.value() - 1, self.lineEdit_3.text())
+                    else:
+                        month = (self.spinBox_4.value() - 1, 'all')
+
+                    if self.lineEdit_4.text() != '0':
+                        day = (self.spinBox_5.value() - 1, self.lineEdit_4.text())
+                    else:
+                        day = (self.spinBox_5.value() - 1, 'all')
+
+                    if self.lineEdit_5.text() != '0':
+                        hour = (self.spinBox_6.value() - 1, self.lineEdit_5.text())
+                    else:
+                        hour = (self.spinBox_6.value() - 1, 'all')
+
+                    if self.checkBox_4.checkState():
+                        if self.lineEdit_6.text() != '0':
+                            minute = (self.spinBox_7.value() - 1, self.lineEdit_6.text())
+                        else:
+                            minute = (self.spinBox_7.value() - 1, 'all')
+                    else:
+                        minute = None
+
+                    if self.checkBox_5.checkState():
+                        if self.lineEdit_7.text() != '0':
+                            second = (self.spinBox_8.value() - 1, self.lineEdit_7.text())
+                        else:
+                            second = (self.spinBox_8.value() - 1, 'all')
+                    else:
+                        second = None
+
+                    if year[1] != 'all':
+                        years = [int(x[year[0]][int(year[1].split('-')[0]) - 1:int(year[1].split('-')[1])]) for x in
+                                 data]
+                    else:
+                        years = [int(x[year[0]]) for x in data]
+
+                    if month[1] != 'all':
+                        months = [int(x[month[0]][int(month[1].split('-')[0]) - 1:int(month[1].split('-')[1])]) for x in
+                                  data]
+                    else:
+                        months = [int(x[month[0]]) for x in data]
+
+                    if day[1] != 'all':
+                        days = [int(x[day[0]][int(day[1].split('-')[0]) - 1:int(day[1].split('-')[1])]) for x in data]
+                    else:
+                        days = [int(x[day[0]]) for x in data]
+
+                    if hour[1] != 'all':
+                        hours = [int(x[hour[0]][int(hour[1].split('-')[0]) - 1:int(hour[1].split('-')[1])]) for x in
+                                 data]
+                    else:
+                        hours = [int(x[hour[0]]) for x in data]
+
+                    if minute is None:
+                        minutes = None
+                    else:
+                        if minute[1] != 'all':
+                            minutes = [int(x[minute[0]][int(minute[1].split('-')[0]) - 1:int(minute[1].split('-')[1])])
+                                       for x in data]
+                        else:
+                            minutes = [int(x[minute[0]]) for x in data]
+
+                    if second is None:
+                        seconds = None
+                    else:
+                        if second[1] != 'all':
+                            seconds = [int(x[second[0]][int(second[1].split('-')[0]) - 1:int(second[1].split('-')[1])])
+                                       for x in data]
+                        else:
+                            seconds = [int(x[second[0]]) for x in data]
+
+                    if minutes is None:
+                        dates = [
+                            datetime.datetime(
+                                year=years[i],
+                                month=months[i],
+                                day=days[i],
+                                hour=hours[i])
+                            for i in range(len(data))
+                            ]
+                    else:
+                        if seconds is None:
+                            dates = [
+                                datetime.datetime(
+                                    year=years[i],
+                                    month=months[i],
+                                    day=days[i],
+                                    hour=hours[i],
+                                    minute=minutes[i])
+                                for i in range(len(data))
+                                ]
+                        else:
+                            dates = [
+                                datetime.datetime(
+                                    year=years[i],
+                                    month=months[i],
+                                    day=days[i],
+                                    hour=hours[i],
+                                    minute=minutes[i],
+                                    second=seconds[i])
+                                for i in range(len(data))
+                                ]
+                    # frame = pd.DataFrame(data=data, index=dates)
+                    # frame.index.names = ['Date-time [UTC]']
+                    # frame.columns.names = ['Data classes']
+                    # app_state[-1][2] = frame
+
+                    for i, row in enumerate(data[0:50]):
+                        for j, col in enumerate(row):
+                            self.tableWidget.setItem(i, j, QtGui.QTableWidgetItem(str(col)))
+
+                    if data[0][-1] == '\n':
+                        data = [x[:-1] for x in data]
+                    for i in range(len(data)):
+                        for j in range(len(data[i])):
+                            try:
+                                data[i][j] = float(data[i][j])
+                            except:
+                                pass
+
+                    for i in range(50):
+                        self.tableWidget.setVerticalHeaderItem(i, QtGui.QTableWidgetItem(str(dates[i])))
+
                 # data = dpParse(file_name, separator=self.lineEdit.text())
                 # for i in range(len(data)):
                 #     self.tableWidget.setVerticalHeaderItem(i, QtGui.QTableWidgetItem(dates[i]))
@@ -233,26 +529,347 @@ class PyEVAParseDialog(QtGui.QDialog, Ui_ParseDialog):
                 if self.checkBox.checkState():
                     headers_row = self.spinBox.value() - 1
                     values_row = self.spinBox_2.value() - 1
-                    data = [line.split(separator) for line in app_state[-1][0]]
-                    headers = data[headers_row]
-                    # TODO: split headers properly (different separators)
-                    data = data[values_row:]
+                    data = [line.split(separator) for line in app_state[-1][0]][values_row:]
+                    headers = app_state[-1][0][headers_row]
+                    headers_separator = self.lineEdit_8.text()
+                    headers = headers.split(sep=headers_separator)
+                    headers = [x for x in headers if len(x) > 0 and x !='\n']
+                    if data[0][-1] == '\n':
+                        data = [x[:-1] for x in data]
+                    for i in range(len(data)):
+                        for j in range(len(data[i])):
+                            try:
+                                data[i][j] = float(data[i][j])
+                            except:
+                                pass
                     self.tableWidget.setRowCount(50)
-                    self.tableWidget.setColumnCount(len(data[50]))
+                    self.tableWidget.setColumnCount(len(headers))
                     for i in range(len(headers)):
                         self.tableWidget.setHorizontalHeaderItem(i, QtGui.QTableWidgetItem(headers[i]))
                     for i, row in enumerate(data[0:50]):
                         for j, col in enumerate(row):
-                            self.tableWidget.setItem(i, j, QtGui.QTableWidgetItem(col))
+                            self.tableWidget.setItem(i, j, QtGui.QTableWidgetItem(str(col)))
                 # Parse without headers
                 else:
                     values_row = self.spinBox_2.value() - 1
                     data = [line.split(separator) for line in app_state[-1][0]][values_row:]
                     self.tableWidget.setRowCount(50)
                     self.tableWidget.setColumnCount(len(data[50]))
+                    if data[0][-1] == '\n':
+                        data = [x[:-1] for x in data]
+                    for i in range(len(data)):
+                        for j in range(len(data[i])):
+                            try:
+                                data[i][j] = float(data[i][j])
+                            except:
+                                pass
                     for i, row in enumerate(data[0:50]):
                         for j, col in enumerate(row):
-                            self.tableWidget.setItem(i, j, QtGui.QTableWidgetItem(col))
+                            self.tableWidget.setItem(i, j, QtGui.QTableWidgetItem(str(col)))
+
+    def pdParse(self):
+        global app_state
+        print('Parsing loaded data')
+        separator = self.lineEdit.text()
+        self.tableWidget.clear()
+        self.tableWidget.setColumnCount(0)
+        self.tableWidget.setRowCount(0)
+
+        ##################################################
+        # Parsing with dates
+        ##################################################
+
+        if self.checkBox_2.checkState():
+            # Parse with headers
+            if self.checkBox.checkState():
+                headers_row = self.spinBox.value() - 1
+                values_row = self.spinBox_2.value() - 1
+                headers = app_state[-1][0][headers_row]
+                headers_separator = self.lineEdit_8.text()
+                headers = headers.split(sep=headers_separator)
+                headers = [x for x in headers if len(x) > 0 and x != '\n']
+
+                data = [line.split(separator) for line in app_state[-1][0]][values_row:]
+
+                self.tableWidget.setRowCount(50)
+                self.tableWidget.setColumnCount(len(headers))
+
+                if self.lineEdit_2.text() != '0':
+                    year = (self.spinBox_3.value() - 1, self.lineEdit_2.text())
+                else:
+                    year = (self.spinBox_3.value() - 1, 'all')
+
+                if self.lineEdit_3.text() != '0':
+                    month = (self.spinBox_4.value() - 1, self.lineEdit_3.text())
+                else:
+                    month = (self.spinBox_4.value() - 1, 'all')
+
+                if self.lineEdit_4.text() != '0':
+                    day = (self.spinBox_5.value() - 1, self.lineEdit_4.text())
+                else:
+                    day = (self.spinBox_5.value() - 1, 'all')
+
+                if self.lineEdit_5.text() != '0':
+                    hour = (self.spinBox_6.value() - 1, self.lineEdit_5.text())
+                else:
+                    hour = (self.spinBox_6.value() - 1, 'all')
+
+                if self.checkBox_4.checkState():
+                    if self.lineEdit_6.text() != '0':
+                        minute = (self.spinBox_7.value() - 1, self.lineEdit_6.text())
+                    else:
+                        minute = (self.spinBox_7.value() - 1, 'all')
+                else:
+                    minute = None
+
+                if self.checkBox_5.checkState():
+                    if self.lineEdit_7.text() != '0':
+                        second = (self.spinBox_8.value() - 1, self.lineEdit_7.text())
+                    else:
+                        second = (self.spinBox_8.value() - 1, 'all')
+                else:
+                    second = None
+
+                if year[1] != 'all':
+                    years = [int(x[year[0]][int(year[1].split('-')[0]) - 1:int(year[1].split('-')[1])]) for x in
+                             data]
+                else:
+                    years = [int(x[year[0]]) for x in data]
+
+                if month[1] != 'all':
+                    months = [int(x[month[0]][int(month[1].split('-')[0]) - 1:int(month[1].split('-')[1])]) for x in
+                              data]
+                else:
+                    months = [int(x[month[0]]) for x in data]
+
+                if day[1] != 'all':
+                    days = [int(x[day[0]][int(day[1].split('-')[0]) - 1:int(day[1].split('-')[1])]) for x in data]
+                else:
+                    days = [int(x[day[0]]) for x in data]
+
+                if hour[1] != 'all':
+                    hours = [int(x[hour[0]][int(hour[1].split('-')[0]) - 1:int(hour[1].split('-')[1])]) for x in
+                             data]
+                else:
+                    hours = [int(x[hour[0]]) for x in data]
+
+                if minute is None:
+                    minutes = None
+                else:
+                    if minute[1] != 'all':
+                        minutes = [int(x[minute[0]][int(minute[1].split('-')[0]) - 1:int(minute[1].split('-')[1])])
+                                   for x in data]
+                    else:
+                        minutes = [int(x[minute[0]]) for x in data]
+
+                if second is None:
+                    seconds = None
+                else:
+                    if second[1] != 'all':
+                        seconds = [int(x[second[0]][int(second[1].split('-')[0]) - 1:int(second[1].split('-')[1])])
+                                   for x in data]
+                    else:
+                        seconds = [int(x[second[0]]) for x in data]
+
+                if minutes is None:
+                    dates = [
+                        datetime.datetime(
+                            year=years[i],
+                            month=months[i],
+                            day=days[i],
+                            hour=hours[i])
+                        for i in range(len(data))
+                        ]
+                else:
+                    if seconds is None:
+                        dates = [
+                            datetime.datetime(
+                                year=years[i],
+                                month=months[i],
+                                day=days[i],
+                                hour=hours[i],
+                                minute=minutes[i])
+                            for i in range(len(data))
+                            ]
+                    else:
+                        dates = [
+                            datetime.datetime(
+                                year=years[i],
+                                month=months[i],
+                                day=days[i],
+                                hour=hours[i],
+                                minute=minutes[i],
+                                second=seconds[i])
+                            for i in range(len(data))
+                            ]
+
+
+                for i, row in enumerate(data[0:50]):
+                    for j, col in enumerate(row):
+                        self.tableWidget.setItem(i, j, QtGui.QTableWidgetItem(str(col)))
+
+                if data[0][-1] == '\n':
+                    data = [x[:-1] for x in data]
+                for i in range(len(data)):
+                    for j in range(len(data[i])):
+                        try:
+                            data[i][j] = float(data[i][j])
+                        except:
+                            pass
+
+                for i in range(len(headers)):
+                    self.tableWidget.setHorizontalHeaderItem(i, QtGui.QTableWidgetItem(headers[i]))
+                for i in range(50):
+                    self.tableWidget.setVerticalHeaderItem(i, QtGui.QTableWidgetItem(str(dates[i])))
+                frame = pd.DataFrame(data=data, index=dates)
+                frame.index.names = ['Date-time [UTC]']
+                frame.columns.names = ['Data classes']
+                frame.columns = headers
+                app_state[-1][1] = frame
+            # Parse without headers
+            else:
+                values_row = self.spinBox_2.value() - 1
+                data = [line.split(separator) for line in app_state[-1][0]][values_row:]
+
+                self.tableWidget.setRowCount(50)
+                self.tableWidget.setColumnCount(len(data[50]))
+
+                if self.lineEdit_2.text() != '0':
+                    year = (self.spinBox_3.value() - 1, self.lineEdit_2.text())
+                else:
+                    year = (self.spinBox_3.value() - 1, 'all')
+
+                if self.lineEdit_3.text() != '0':
+                    month = (self.spinBox_4.value() - 1, self.lineEdit_3.text())
+                else:
+                    month = (self.spinBox_4.value() - 1, 'all')
+
+                if self.lineEdit_4.text() != '0':
+                    day = (self.spinBox_5.value() - 1, self.lineEdit_4.text())
+                else:
+                    day = (self.spinBox_5.value() - 1, 'all')
+
+                if self.lineEdit_5.text() != '0':
+                    hour = (self.spinBox_6.value() - 1, self.lineEdit_5.text())
+                else:
+                    hour = (self.spinBox_6.value() - 1, 'all')
+
+                if self.checkBox_4.checkState():
+                    if self.lineEdit_6.text() != '0':
+                        minute = (self.spinBox_7.value() - 1, self.lineEdit_6.text())
+                    else:
+                        minute = (self.spinBox_7.value() - 1, 'all')
+                else:
+                    minute = None
+
+                if self.checkBox_5.checkState():
+                    if self.lineEdit_7.text() != '0':
+                        second = (self.spinBox_8.value() - 1, self.lineEdit_7.text())
+                    else:
+                        second = (self.spinBox_8.value() - 1, 'all')
+                else:
+                    second = None
+
+                if year[1] != 'all':
+                    years = [int(x[year[0]][int(year[1].split('-')[0]) - 1:int(year[1].split('-')[1])]) for x in
+                             data]
+                else:
+                    years = [int(x[year[0]]) for x in data]
+
+                if month[1] != 'all':
+                    months = [int(x[month[0]][int(month[1].split('-')[0]) - 1:int(month[1].split('-')[1])]) for x in
+                              data]
+                else:
+                    months = [int(x[month[0]]) for x in data]
+
+                if day[1] != 'all':
+                    days = [int(x[day[0]][int(day[1].split('-')[0]) - 1:int(day[1].split('-')[1])]) for x in data]
+                else:
+                    days = [int(x[day[0]]) for x in data]
+
+                if hour[1] != 'all':
+                    hours = [int(x[hour[0]][int(hour[1].split('-')[0]) - 1:int(hour[1].split('-')[1])]) for x in
+                             data]
+                else:
+                    hours = [int(x[hour[0]]) for x in data]
+
+                if minute is None:
+                    minutes = None
+                else:
+                    if minute[1] != 'all':
+                        minutes = [int(x[minute[0]][int(minute[1].split('-')[0]) - 1:int(minute[1].split('-')[1])])
+                                   for x in data]
+                    else:
+                        minutes = [int(x[minute[0]]) for x in data]
+
+                if second is None:
+                    seconds = None
+                else:
+                    if second[1] != 'all':
+                        seconds = [int(x[second[0]][int(second[1].split('-')[0]) - 1:int(second[1].split('-')[1])])
+                                   for x in data]
+                    else:
+                        seconds = [int(x[second[0]]) for x in data]
+
+                if minutes is None:
+                    dates = [
+                        datetime.datetime(
+                            year=years[i],
+                            month=months[i],
+                            day=days[i],
+                            hour=hours[i])
+                        for i in range(len(data))
+                        ]
+                else:
+                    if seconds is None:
+                        dates = [
+                            datetime.datetime(
+                                year=years[i],
+                                month=months[i],
+                                day=days[i],
+                                hour=hours[i],
+                                minute=minutes[i])
+                            for i in range(len(data))
+                            ]
+                    else:
+                        dates = [
+                            datetime.datetime(
+                                year=years[i],
+                                month=months[i],
+                                day=days[i],
+                                hour=hours[i],
+                                minute=minutes[i],
+                                second=seconds[i])
+                            for i in range(len(data))
+                            ]
+                # frame = pd.DataFrame(data=data, index=dates)
+                # frame.index.names = ['Date-time [UTC]']
+                # frame.columns.names = ['Data classes']
+                # app_state[-1][2] = frame
+
+                for i, row in enumerate(data[0:50]):
+                    for j, col in enumerate(row):
+                        self.tableWidget.setItem(i, j, QtGui.QTableWidgetItem(str(col)))
+
+                if data[0][-1] == '\n':
+                    data = [x[:-1] for x in data]
+                for i in range(len(data)):
+                    for j in range(len(data[i])):
+                        try:
+                            data[i][j] = float(data[i][j])
+                        except:
+                            pass
+
+                for i in range(50):
+                    self.tableWidget.setVerticalHeaderItem(i, QtGui.QTableWidgetItem(str(dates[i])))
+
+                frame = pd.DataFrame(data=data, index=dates)
+                frame.index.names = ['Date-time [UTC]']
+                frame.columns.names = ['Data classes']
+                app_state[-1][1] = frame
+            print(app_state[-1][1].head(n=10))
+            self.close()
+
 
 def main():
     # Initialize global program state object ([0] - GUI, [1] - EVA)

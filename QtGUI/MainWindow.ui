@@ -582,6 +582,16 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_11">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>Export time series</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </item>
         <item>
@@ -591,8 +601,8 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
           </property>
           <property name="sizeHint" stdset="0">
            <size>
-            <width>20</width>
-            <height>40</height>
+            <width>497</width>
+            <height>13</height>
            </size>
           </property>
          </spacer>
@@ -692,8 +702,8 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
           </property>
           <property name="sizeHint" stdset="0">
            <size>
-            <width>20</width>
-            <height>40</height>
+            <width>497</width>
+            <height>13</height>
            </size>
           </property>
          </spacer>
@@ -942,8 +952,8 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
           </property>
           <property name="sizeHint" stdset="0">
            <size>
-            <width>20</width>
-            <height>40</height>
+            <width>497</width>
+            <height>13</height>
            </size>
           </property>
          </spacer>
