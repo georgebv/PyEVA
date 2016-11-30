@@ -29,6 +29,7 @@ class PyEVAMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         # Map buttons
         self.pushButton_2.clicked.connect(self.mwLoadSeries)
         self.pushButton.clicked.connect(self.mwParse)
+        self.pushButton_11.clicked.connect(self.mwExportSeries)
 
     ##################################################
     # Toolbar functions
@@ -54,8 +55,6 @@ class PyEVAMainWindow(QtGui.QMainWindow, Ui_MainWindow):
                 with open(save_name, 'wb') as f:
                     pickle.dump(app_state, f)
                 self.setWindowTitle(' '.join(['PyEVA -', 'project', app_state[0][0].split('/')[-1].split('.')[0]]))
-            else:
-                pass
         else:
             print('Project state dumped at: {}'.format(app_state[0][0]))
             with open(app_state[0][0], 'wb') as f:
@@ -125,10 +124,16 @@ class PyEVAMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.mwUI_update()
 
     def mwPlotSeries(self):
+        # TODO: <plot_series> method
         pass
 
     def mwExportSeries(self):
-        pass
+        global app_state
+        save_name = QtGui.QFileDialog.getSaveFileName(self, 'Save current PyEVA project',
+                                                      '/time series', '*.csv')
+        if save_name != '':
+            print('Dumping parsed time series at: {}'.format(save_name))
+            app_state[1][0].to_csv(save_name)
 
     def mwFit(self):
         global app_state

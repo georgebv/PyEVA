@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Users\georg\Documents\GitHub\PyEVA\QtGUI\ParseDialog.ui'
+# Form implementation generated from reading ui file 'ParseDialog.ui'
 #
 # Created by: PyQt4 UI code generator 4.11.4
 #
@@ -874,13 +874,13 @@ class Ui_Dialog(object):
         self.pushButton.setText(_translate("Dialog", "Preview table", None))
         self.pushButton_3.setText(_translate("Dialog", "Parse data", None))
         self.groupBox_3.setTitle(_translate("Dialog", "Date-time parsing", None))
-        self.lineEdit_2.setText(_translate("Dialog", "all", None))
+        self.lineEdit_2.setText(_translate("Dialog", "0", None))
         self.label_9.setText(_translate("Dialog", "Element index", None))
-        self.lineEdit_4.setText(_translate("Dialog", "all", None))
-        self.lineEdit_3.setText(_translate("Dialog", "all", None))
-        self.lineEdit_6.setText(_translate("Dialog", "all", None))
-        self.lineEdit_5.setText(_translate("Dialog", "all", None))
-        self.lineEdit_7.setText(_translate("Dialog", "all", None))
+        self.lineEdit_4.setText(_translate("Dialog", "0", None))
+        self.lineEdit_3.setText(_translate("Dialog", "0", None))
+        self.lineEdit_6.setText(_translate("Dialog", "0", None))
+        self.lineEdit_5.setText(_translate("Dialog", "0", None))
+        self.lineEdit_7.setText(_translate("Dialog", "0", None))
         self.label_11.setText(_translate("Dialog", "Year", None))
         self.label_10.setText(_translate("Dialog", "Column index", None))
         self.label_12.setText(_translate("Dialog", "Month", None))
