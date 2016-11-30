@@ -1,5 +1,6 @@
 from MainWindow import Ui_MainWindow
 from ParseDialog import Ui_Dialog as Ui_ParseDialog
+from PlotSeriesDialog import Ui_Dialog as Ui_PlotSeriesDialog
 import datetime
 
 from PyQt4 import QtGui, QtCore
@@ -30,6 +31,7 @@ class PyEVAMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.pushButton_2.clicked.connect(self.mwLoadSeries)
         self.pushButton.clicked.connect(self.mwParse)
         self.pushButton_11.clicked.connect(self.mwExportSeries)
+        self.pushButton_8.clicked.connect(self.mwPlotSeries)
 
     ##################################################
     # Toolbar functions
@@ -118,14 +120,18 @@ class PyEVAMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         if file_name != '':
             print('Passed file at {}'.format(file_name))
             data = pd.read_csv(file_name, index_col=0)
-            data.index = pd.to_datetime(data.index)
+            print(data)
             app_state[1][0] = data
             app_state[1][1] = 'Extremes'
         self.mwUI_update()
 
     def mwPlotSeries(self):
-        # TODO: <plot_series> method
-        pass
+        global app_state
+        print('Opening the time series plotting dialog window')
+        plotUI = PyEVAPlotSeriesDialog()
+        plotUI.show()
+        print('Time series plotter dialog window closed with exit status {}'.format(plotUI.exec()))
+        self.mwUI_update()
 
     def mwExportSeries(self):
         global app_state
@@ -874,6 +880,39 @@ class PyEVAParseDialog(QtGui.QDialog, Ui_ParseDialog):
                 app_state[-1][1] = frame
             print(app_state[-1][1].head(n=10))
             self.close()
+
+
+class PyEVAPlotSeriesDialog(QtGui.QDialog, Ui_PlotSeriesDialog):
+
+    global app_state
+
+    def __init__(self, parent=None):
+        global app_state
+        QtGui.QWidget.__init__(self, parent)
+        self.setupUi(self)
+        data = app_state[1][0].values
+        headers = app_state[1][0].columns.values
+        index = app_state[1][0].index.values
+
+        # Populate preview table
+        self.tableWidget.setRowCount(50)
+        self.tableWidget.setColumnCount(len(data[50]))
+        for i in range(len(headers)):
+            self.tableWidget.setHorizontalHeaderItem(i, QtGui.QTableWidgetItem(headers[i]))
+        for i in range(50):
+            self.tableWidget.setVerticalHeaderItem(i, QtGui.QTableWidgetItem(str(index[i])))
+        for i, row in enumerate(data[0:50]):
+            for j, col in enumerate(row):
+                self.tableWidget.setItem(i, j, QtGui.QTableWidgetItem(str(col)))
+
+        self.comboBox.clear()
+        self.comboBox.addItems(headers)
+
+        # Map buttons to functions
+        self.pushButton.clicked.connect(self.psdPlot)
+
+    def psdPlot(self):
+        pass
 
 
 def main():
