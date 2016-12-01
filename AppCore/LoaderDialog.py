@@ -20,14 +20,10 @@ class Loader(QtGui.QWidget):
         self.movie_screen.setMovie(self.movie)
         self.movie.start()
 
-    def quit(self):
-        self.close()
 
 app = QtGui.QApplication(sys.argv)
 player = Loader()
 player.show()
-time.sleep(3)
-player.quit()
 sys.exit(app.exec_())
 
 
