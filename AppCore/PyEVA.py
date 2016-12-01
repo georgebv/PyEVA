@@ -142,6 +142,7 @@ class PyEVAMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         global app_state
         # Do some fitting here (state changing)
         QtGui.QMessageBox.information(self, 'Fit successful', 'Distribution fit complete')
+        self.mwUI_update()
 
     ##################################################
     # UI handling functions
@@ -181,6 +182,7 @@ class PyEVAMainWindow(QtGui.QMainWindow, Ui_MainWindow):
             self.pushButton_5.setEnabled(False)
             self.label_4.setEnabled(False)
             self.label_5.setEnabled(False)
+
         app_state[0][1] = '''Extreme Value Analysis summary:
 
 
@@ -365,10 +367,6 @@ class PyEVAParseDialog(QtGui.QDialog, Ui_ParseDialog):
                                     second=seconds[i])
                                 for i in range(len(data))
                                 ]
-                    # frame = pd.DataFrame(data=data, index=dates)
-                    # frame.index.names = ['Date-time [UTC]']
-                    # frame.columns.names = ['Data classes']
-                    # app_state[-1][2] = frame
 
                     for i, row in enumerate(data[0:50]):
                         for j, col in enumerate(row):
@@ -504,10 +502,6 @@ class PyEVAParseDialog(QtGui.QDialog, Ui_ParseDialog):
                                     second=seconds[i])
                                 for i in range(len(data))
                                 ]
-                    # frame = pd.DataFrame(data=data, index=dates)
-                    # frame.index.names = ['Date-time [UTC]']
-                    # frame.columns.names = ['Data classes']
-                    # app_state[-1][2] = frame
 
                     for i, row in enumerate(data[0:50]):
                         for j, col in enumerate(row):
@@ -714,7 +708,6 @@ class PyEVAParseDialog(QtGui.QDialog, Ui_ParseDialog):
                             for i in range(len(data))
                             ]
 
-
                 for i, row in enumerate(data[0:50]):
                     for j, col in enumerate(row):
                         self.tableWidget.setItem(i, j, QtGui.QTableWidgetItem(str(col)))
@@ -734,7 +727,6 @@ class PyEVAParseDialog(QtGui.QDialog, Ui_ParseDialog):
                     self.tableWidget.setVerticalHeaderItem(i, QtGui.QTableWidgetItem(str(dates[i])))
                 frame = pd.DataFrame(data=data, index=dates)
                 frame.index.names = ['Date-time [UTC]']
-                frame.columns.names = ['Data classes']
                 frame.columns = headers
                 app_state[-1][1] = frame
             # Parse without headers
@@ -853,10 +845,6 @@ class PyEVAParseDialog(QtGui.QDialog, Ui_ParseDialog):
                                 second=seconds[i])
                             for i in range(len(data))
                             ]
-                # frame = pd.DataFrame(data=data, index=dates)
-                # frame.index.names = ['Date-time [UTC]']
-                # frame.columns.names = ['Data classes']
-                # app_state[-1][2] = frame
 
                 for i, row in enumerate(data[0:50]):
                     for j, col in enumerate(row):
@@ -876,12 +864,12 @@ class PyEVAParseDialog(QtGui.QDialog, Ui_ParseDialog):
 
                 frame = pd.DataFrame(data=data, index=dates)
                 frame.index.names = ['Date-time [UTC]']
-                frame.columns.names = ['Data classes']
                 app_state[-1][1] = frame
             print(app_state[-1][1].head(n=10))
             app_state[1][0] = frame
             self.PyEVAParseDialogCloseSignal.emit()
             self.close()
+
 
 class PyEVAPlotSeriesDialog(QtGui.QDialog, Ui_PlotSeriesDialog):
 
@@ -935,8 +923,15 @@ class PyEVAPlotSeriesDialog(QtGui.QDialog, Ui_PlotSeriesDialog):
         with plt.style.context('bmh'):
             plt.figure(figsize=(18, 5))
             plt.subplot(1, 1, 1)
+            marker = self.comboBox_2.currentText()
+            if marker == 'x' or marker == '+':
+                facecolor = 'royalblue'
+                edgecolors = 'royalblue'
+            else:
+                facecolor = 'None'
+                edgecolors = 'royalblue'
             plt.scatter(x=x_values, y=y_values, s=self.spinBox.value(),
-                        marker=str(self.comboBox_2.currentText()), facecolor='None', edgecolors='royalblue')
+                        marker=marker, facecolor=facecolor, edgecolors=edgecolors)
             plt.xlabel(self.lineEdit_2.text())
             plt.ylabel(self.lineEdit_3.text())
             plt.title(self.lineEdit.text())
@@ -948,11 +943,12 @@ def main():
     global app_state
 
     app_state = [
-        ['save_name', 'status_pane'],
+        ['save_name', 'status_window'],
         ['Series', 'Extremes', 'Fit'],
         'EVA_class',
         ['Raw data', 'Parsed DataFrame']
     ]
+
     app = QtGui.QApplication(sys.argv)
     coreUI = PyEVAMainWindow()
     coreUI.show()
