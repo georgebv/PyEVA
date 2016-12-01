@@ -907,9 +907,14 @@ class PyEVAPlotSeriesDialog(QtGui.QDialog, Ui_PlotSeriesDialog):
         data = app_state[1][0]
 
         # Perform basic missing values handling
+        data[self.comboBox.currentText()] = data[self.comboBox.currentText()].replace(
+            r'[a-zA-Z _&$#@?]+', '999.9', regex=True)
+        data[self.comboBox.currentText()] = pd.to_numeric(data[self.comboBox.currentText()])
+        data[self.comboBox.currentText()] = data[self.comboBox.currentText()].replace(np.nan, 999.9)
         data = data[data[self.comboBox.currentText()] != 999]
         data = data[data[self.comboBox.currentText()] != 999.9]
-        data = data[data[self.comboBox.currentText()] != np.nan]
+        print(data[self.comboBox.currentText()])
+
         try:
             data = data[data[self.comboBox.currentText()] != 'NaN']
             data = data[data[self.comboBox.currentText()] != 'None']
