@@ -12,6 +12,7 @@ import datetime
 import matplotlib.pyplot as plt
 import numpy as np
 from tkinter import filedialog, messagebox
+import tkinter
 
 
 class PyEVAMainWindow(QtGui.QMainWindow, Ui_MainWindow):
