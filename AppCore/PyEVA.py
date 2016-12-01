@@ -889,7 +889,7 @@ class PyEVAPlotSeriesDialog(QtGui.QDialog, Ui_PlotSeriesDialog):
         self.tableWidget.setRowCount(50)
         self.tableWidget.setColumnCount(len(data[50]))
         for i in range(len(headers)):
-            self.tableWidget.setHorizontalHeaderItem(i, QtGui.QTableWidgetItem(headers[i]))
+            self.tableWidget.setHorizontalHeaderItem(i, QtGui.QTableWidgetItem(str(headers[i])))
         for i in range(50):
             self.tableWidget.setVerticalHeaderItem(i, QtGui.QTableWidgetItem(str(index[i])))
         for i, row in enumerate(data[0:50]):
@@ -897,7 +897,7 @@ class PyEVAPlotSeriesDialog(QtGui.QDialog, Ui_PlotSeriesDialog):
                 self.tableWidget.setItem(i, j, QtGui.QTableWidgetItem(str(col)))
 
         self.comboBox.clear()
-        self.comboBox.addItems(list(headers))
+        self.comboBox.addItems(list([str(x) for x in headers]))
 
         # Map buttons to functions
         self.pushButton.clicked.connect(self.psdPlot)
@@ -907,24 +907,35 @@ class PyEVAPlotSeriesDialog(QtGui.QDialog, Ui_PlotSeriesDialog):
         data = app_state[1][0]
 
         # Perform basic missing values handling
-        data[self.comboBox.currentText()] = data[self.comboBox.currentText()].replace(
-            r'[a-zA-Z _&$#@?]+', '999.9', regex=True)
-        data[self.comboBox.currentText()] = pd.to_numeric(data[self.comboBox.currentText()])
-        data[self.comboBox.currentText()] = data[self.comboBox.currentText()].replace(np.nan, 999.9)
-        data = data[data[self.comboBox.currentText()] != 999]
-        data = data[data[self.comboBox.currentText()] != 999.9]
-        print(data[self.comboBox.currentText()])
+        
+        try:
+            column = str(self.comboBox.currentText())
+            data[column] = data[column].replace(r'[a-zA-Z _&$#@?]+', '999.9', regex=True)
+        except:
+            try:
+                column = int(self.comboBox.currentText())
+                data[column] = data[column].replace(r'[a-zA-Z _&$#@?]+', '999.9', regex=True)
+            except:
+                column = float(self.comboBox.currentText())
+                data[column] = data[column].replace(r'[a-zA-Z _&$#@?]+', '999.9', regex=True)
+        data[column] = pd.to_numeric(data[column])
+        data[column] = data[column].replace(np.nan, 999.9)
+        data = data[data[column] != 999]
+        data = data[data[column] != 999.9]
+        data = data[data[column] != 99]
+        data = data[data[column] != 99.9]
+        print(data[column])
 
         try:
-            data = data[data[self.comboBox.currentText()] != 'NaN']
-            data = data[data[self.comboBox.currentText()] != 'None']
-            data = data[data[self.comboBox.currentText()] != 'Missing']
-            data = data[data[self.comboBox.currentText()] != '']
+            data = data[data[column] != 'NaN']
+            data = data[data[column] != 'None']
+            data = data[data[column] != 'Missing']
+            data = data[data[column] != '']
         except:
             pass
 
         x_values = pd.to_datetime(data.index)
-        y_values = data[self.comboBox.currentText()].values
+        y_values = data[column].values
 
         with plt.style.context('bmh'):
             plt.figure(figsize=(18, 5))
