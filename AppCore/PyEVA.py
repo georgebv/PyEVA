@@ -11,6 +11,7 @@ import subprocess
 import datetime
 import matplotlib.pyplot as plt
 import numpy as np
+from tkinter import filedialog, messagebox
 
 
 class PyEVAMainWindow(QtGui.QMainWindow, Ui_MainWindow):
@@ -107,15 +108,9 @@ class PyEVAMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         print('Opening the parser dialog window')
         app_state[1][1] = 'Extremes'
         parseUI = PyEVAParseDialog()
+        parseUI.PyEVAParseDialogCloseSignal.connect(self.mwUI_update)
         parseUI.show()
         print('Parser dialog window closed with exit status {}'.format(parseUI.exec()))
-        self.mwUI_update()
-        if type(app_state[-1][1]) != type('Parsed DataFrame'):
-            app_state[1][0] = app_state[-1][1]
-            self.pushButton_3.setEnabled(True)
-            self.pushButton_4.setEnabled(True)
-            self.pushButton_8.setEnabled(True)
-            self.pushButton_11.setEnabled(True)
 
     def mwLoadSeries(self):
         global app_state
@@ -134,7 +129,6 @@ class PyEVAMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         plotUI = PyEVAPlotSeriesDialog()
         plotUI.show()
         print('Time series plotter dialog window closed with exit status {}'.format(plotUI.exec()))
-        self.mwUI_update()
 
     def mwExportSeries(self):
         global app_state
@@ -205,6 +199,8 @@ class PyEVAParseDialog(QtGui.QDialog, Ui_ParseDialog):
 
     global app_state
 
+    PyEVAParseDialogCloseSignal = QtCore.pyqtSignal()
+
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
         self.setupUi(self)
@@ -224,6 +220,7 @@ class PyEVAParseDialog(QtGui.QDialog, Ui_ParseDialog):
             self.tableWidget.setRowCount(0)
             with open(file_name, 'r') as f:
                 app_state[-1][0] = [line for line in f.readlines()]
+            app_state[-1][0] = [row for row in app_state[-1][0] if row != '\n']
             if len(app_state[-1][0]) > 100:
                 first = ''.join(app_state[-1][0][0:50])
                 mid = 'First 50 rows\n' + len((app_state[-1][0][0:50][-1])) * '-' + '\nLast 50 rows\n'
@@ -882,8 +879,9 @@ class PyEVAParseDialog(QtGui.QDialog, Ui_ParseDialog):
                 frame.columns.names = ['Data classes']
                 app_state[-1][1] = frame
             print(app_state[-1][1].head(n=10))
+            app_state[1][0] = frame
+            self.PyEVAParseDialogCloseSignal.emit()
             self.close()
-
 
 class PyEVAPlotSeriesDialog(QtGui.QDialog, Ui_PlotSeriesDialog):
 
@@ -897,6 +895,7 @@ class PyEVAPlotSeriesDialog(QtGui.QDialog, Ui_PlotSeriesDialog):
         headers = app_state[1][0].columns.values
         index = app_state[1][0].index.values
 
+
         # Populate preview table
         self.tableWidget.setRowCount(50)
         self.tableWidget.setColumnCount(len(data[50]))
@@ -909,7 +908,7 @@ class PyEVAPlotSeriesDialog(QtGui.QDialog, Ui_PlotSeriesDialog):
                 self.tableWidget.setItem(i, j, QtGui.QTableWidgetItem(str(col)))
 
         self.comboBox.clear()
-        self.comboBox.addItems(headers)
+        self.comboBox.addItems(list(headers))
 
         # Map buttons to functions
         self.pushButton.clicked.connect(self.psdPlot)
@@ -936,7 +935,8 @@ class PyEVAPlotSeriesDialog(QtGui.QDialog, Ui_PlotSeriesDialog):
         with plt.style.context('bmh'):
             plt.figure(figsize=(18, 5))
             plt.subplot(1, 1, 1)
-            plt.scatter(x=x_values, y=y_values, s=5, marker='o', facecolor='None', edgecolors='royalblue')
+            plt.scatter(x=x_values, y=y_values, s=self.spinBox.value(),
+                        marker=str(self.comboBox_2.currentText()), facecolor='None', edgecolors='royalblue')
             plt.xlabel(self.lineEdit_2.text())
             plt.ylabel(self.lineEdit_3.text())
             plt.title(self.lineEdit.text())
