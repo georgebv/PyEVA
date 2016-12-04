@@ -15,6 +15,10 @@ import subprocess
 import datetime
 import matplotlib.pyplot as plt
 import numpy as np
+import sys
+from win32api import GetSystemMetrics
+import threading
+import time
 from tkinter import filedialog, messagebox
 import tkinter
 
@@ -1009,23 +1013,65 @@ class PyEVABlockMaximaDialog(QtGui.QDialog, Ui_BlockMaximaDialog):
         global app_state
         print('Extracting extreme values...')
         column = str(self.comboBox_2.currentText())
-        app_state[1][0].index = pd.to_datetime(app_state[1][0].index)
-        app_state[2] = EVA(app_state[1][0][column].to_frame(), col=column, handle_nans=True, usetex=False)
-        app_state[2].get_extremes(method='BM', block='Y')
+
+        class bmdExtractWorker(QtCore.QThread):
+            global app_state
+            def __init__(self, mw):
+                super(bmdExtractWorker, self).__init__(mw)
+
+            def run(self):
+                global app_state
+                app_state[1][0].index = pd.to_datetime(app_state[1][0].index)
+                app_state[2] = EVA(app_state[1][0][column].to_frame(), col=column, handle_nans=True, usetex=False)
+                app_state[2].get_extremes(method='BM', block='Y')
+
+        bmdLoader = LoadingDialog()
+        bmdLoader.setModal(True)
+        bmdLoader.show()
+        bmdThread = bmdExtractWorker(self)
 
         # Populate preview table
-        rows2display = min(50, len(app_state[2].extremes) - 1)
-        self.tableWidget_2.setRowCount(rows2display)
-        self.tableWidget_2.setColumnCount(len(app_state[2].extremes.values[rows2display]))
-        for i in range(len(app_state[2].extremes.columns)):
-            self.tableWidget_2.setHorizontalHeaderItem(i, QtGui.QTableWidgetItem(str(app_state[2].extremes.columns[i])))
-        for i in range(rows2display):
-            self.tableWidget_2.setVerticalHeaderItem(i, QtGui.QTableWidgetItem(str(app_state[2].extremes.index[i])))
-        for i, row in enumerate(app_state[2].extremes.values[0:rows2display]):
-            for j, col in enumerate(row):
-                self.tableWidget_2.setItem(i, j, QtGui.QTableWidgetItem(str(col)))
-        app_state[1][1] = app_state[2].extremes
-        self.PyEVABlockMaximaDialogExtractSignal.emit()
+        def bmdUpdate():
+            rows2display = min(50, len(app_state[2].extremes) - 1)
+            self.tableWidget_2.setRowCount(rows2display)
+            self.tableWidget_2.setColumnCount(len(app_state[2].extremes.values[rows2display]))
+            for i in range(len(app_state[2].extremes.columns)):
+                self.tableWidget_2.setHorizontalHeaderItem(i, QtGui.QTableWidgetItem(str(app_state[2].extremes.columns[i])))
+            for i in range(rows2display):
+                self.tableWidget_2.setVerticalHeaderItem(i, QtGui.QTableWidgetItem(str(app_state[2].extremes.index[i])))
+            for i, row in enumerate(app_state[2].extremes.values[0:rows2display]):
+                for j, col in enumerate(row):
+                    self.tableWidget_2.setItem(i, j, QtGui.QTableWidgetItem(str(col)))
+            app_state[1][1] = app_state[2].extremes
+            self.PyEVABlockMaximaDialogExtractSignal.emit()
+            bmdLoader.close()
+
+        bmdThread.finished.connect(bmdUpdate)
+        bmdThread.start()
+
+
+class LoadingDialog(QtGui.QDialog):
+
+    def __init__(self, parent=None):
+        QtGui.QDialog.__init__(self, parent, QtCore.Qt.WindowStaysOnTopHint)
+        self.movie = QtGui.QMovie('loading.gif', QtCore.QByteArray(), self)
+        self.movie_screen = QtGui.QLabel()
+        self.setGeometry(
+            int(GetSystemMetrics(0) / 2 - 400 / 2),
+            int(GetSystemMetrics(1) / 2 - 300 / 2),
+            400,
+            300
+        )
+        main_layout = QtGui.QVBoxLayout()
+        main_layout.addWidget(self.movie_screen)
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        self.setLayout(main_layout)
+        self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+        self.movie.setCacheMode(QtGui.QMovie.CacheAll)
+        self.movie.setSpeed(150)
+        self.movie_screen.setMovie(self.movie)
+        self.movie.start()
+
 
 def main():
     # Initialize global program state object ([0] - GUI, [1] - EVA)
