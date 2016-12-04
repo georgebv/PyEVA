@@ -1,8 +1,12 @@
+# Import UI
 from MainWindow import Ui_MainWindow
 from ParseDialog import Ui_Dialog as Ui_ParseDialog
 from PlotSeriesDialog import Ui_Dialog as Ui_PlotSeriesDialog
+from BlockMaximaDialog import Ui_Dialog as Ui_BlockMaximaDialog
 
 
+# Import logic
+from coastlib.coreutils.data_analysis_tools import EVA
 from PyQt4 import QtGui, QtCore
 import pandas as pd
 import pickle
@@ -37,6 +41,7 @@ class PyEVAMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.pushButton.clicked.connect(self.mwParse)
         self.pushButton_11.clicked.connect(self.mwExportSeries)
         self.pushButton_8.clicked.connect(self.mwPlotSeries)
+        self.pushButton_3.clicked.connect(self.mwBlockMaxima)
 
     ##################################################
     # Toolbar functions
@@ -139,6 +144,14 @@ class PyEVAMainWindow(QtGui.QMainWindow, Ui_MainWindow):
             print('Dumping parsed time series at: {}'.format(save_name))
             app_state[1][0].to_csv(save_name)
 
+    def mwBlockMaxima(self):
+        global app_state
+        print('Opening the block maxima extraction dialog')
+        BM_Ui = PyEVABlockMaximaDialog()
+        BM_Ui.PyEVABlockMaximaDialogExtractSignal.connect(self.mwUI_update)
+        BM_Ui.show()
+        print('Block maxima extraction dialog closed with exist status {}'.format(BM_Ui.exec()))
+
     def mwFit(self):
         global app_state
         # Do some fitting here (state changing)
@@ -151,8 +164,6 @@ class PyEVAMainWindow(QtGui.QMainWindow, Ui_MainWindow):
 
     def mwUI_update(self):
         global app_state
-        series = '☐'
-        extremes = '☐'
         fit = '☐'
 
         if app_state[0][0] != 'save_name':
@@ -169,11 +180,13 @@ class PyEVAMainWindow(QtGui.QMainWindow, Ui_MainWindow):
             self.pushButton_4.setEnabled(False)
             self.pushButton_8.setEnabled(False)
             self.pushButton_11.setEnabled(False)
+            series = '☐'
 
         if type(app_state[1][1]) != type('Extremes'):
             self.comboBox_2.setEnabled(True)
             self.checkBox.setEnabled(True)
             self.pushButton_5.setEnabled(True)
+            self.pushButton_9.setEnabled(True)
             self.label_4.setEnabled(True)
             self.label_5.setEnabled(True)
             extremes = '☒'
@@ -183,6 +196,13 @@ class PyEVAMainWindow(QtGui.QMainWindow, Ui_MainWindow):
             self.pushButton_5.setEnabled(False)
             self.label_4.setEnabled(False)
             self.label_5.setEnabled(False)
+            self.pushButton_9.setEnabled(False)
+            extremes = '☐'
+
+        if type(app_state[1][2]) != type('Fit'):
+            fit = '☒'
+        else:
+            fit = '☐'
 
         app_state[0][1] = '''Extreme Value Analysis summary:
 
@@ -884,7 +904,6 @@ class PyEVAPlotSeriesDialog(QtGui.QDialog, Ui_PlotSeriesDialog):
         headers = app_state[1][0].columns.values
         index = app_state[1][0].index.values
 
-
         # Populate preview table
         self.tableWidget.setRowCount(50)
         self.tableWidget.setColumnCount(len(data[50]))
@@ -954,6 +973,59 @@ class PyEVAPlotSeriesDialog(QtGui.QDialog, Ui_PlotSeriesDialog):
             plt.title(self.lineEdit.text())
             plt.show()
 
+
+class PyEVABlockMaximaDialog(QtGui.QDialog, Ui_BlockMaximaDialog):
+
+    global app_state
+    PyEVABlockMaximaDialogExtractSignal = QtCore.pyqtSignal()
+
+    def __init__(self, parent=None):
+        global app_state
+        QtGui.QWidget.__init__(self, parent)
+        self.setupUi(self)
+
+        data = app_state[1][0].values
+        headers = app_state[1][0].columns.values
+        index = app_state[1][0].index.values
+
+        # Populate preview table
+        self.tableWidget.setRowCount(50)
+        self.tableWidget.setColumnCount(len(data[50]))
+        for i in range(len(headers)):
+            self.tableWidget.setHorizontalHeaderItem(i, QtGui.QTableWidgetItem(str(headers[i])))
+        for i in range(50):
+            self.tableWidget.setVerticalHeaderItem(i, QtGui.QTableWidgetItem(str(index[i])))
+        for i, row in enumerate(data[0:50]):
+            for j, col in enumerate(row):
+                self.tableWidget.setItem(i, j, QtGui.QTableWidgetItem(str(col)))
+
+        self.comboBox_2.clear()
+        self.comboBox_2.addItems(list([str(x) for x in headers]))
+
+        # Map buttons to functions
+        self.pushButton.clicked.connect(self.bmdExtract)
+
+    def bmdExtract(self):
+        global app_state
+        print('Extracting extreme values...')
+        column = str(self.comboBox_2.currentText())
+        app_state[1][0].index = pd.to_datetime(app_state[1][0].index)
+        app_state[2] = EVA(app_state[1][0][column].to_frame(), col=column, handle_nans=True, usetex=False)
+        app_state[2].get_extremes(method='BM', block='Y')
+
+        # Populate preview table
+        rows2display = min(50, len(app_state[2].extremes) - 1)
+        self.tableWidget_2.setRowCount(rows2display)
+        self.tableWidget_2.setColumnCount(len(app_state[2].extremes.values[rows2display]))
+        for i in range(len(app_state[2].extremes.columns)):
+            self.tableWidget_2.setHorizontalHeaderItem(i, QtGui.QTableWidgetItem(str(app_state[2].extremes.columns[i])))
+        for i in range(rows2display):
+            self.tableWidget_2.setVerticalHeaderItem(i, QtGui.QTableWidgetItem(str(app_state[2].extremes.index[i])))
+        for i, row in enumerate(app_state[2].extremes.values[0:rows2display]):
+            for j, col in enumerate(row):
+                self.tableWidget_2.setItem(i, j, QtGui.QTableWidgetItem(str(col)))
+        app_state[1][1] = app_state[2].extremes
+        self.PyEVABlockMaximaDialogExtractSignal.emit()
 
 def main():
     # Initialize global program state object ([0] - GUI, [1] - EVA)
