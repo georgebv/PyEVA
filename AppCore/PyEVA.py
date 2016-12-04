@@ -207,7 +207,7 @@ class PyEVAParseDialog(QtGui.QDialog, Ui_ParseDialog):
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
         self.setupUi(self)
-
+        self.setStyle(QtGui.QStyleFactory.create('Plastique'))
         # Map buttons to functions
         self.pushButton.clicked.connect(self.pdPreview)
         self.pushButton_2.clicked.connect(self.pdLoad)
