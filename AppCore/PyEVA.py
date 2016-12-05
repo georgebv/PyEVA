@@ -4,6 +4,7 @@ from ParseDialog import Ui_Dialog as Ui_ParseDialog
 from PlotSeriesDialog import Ui_Dialog as Ui_PlotSeriesDialog
 from BlockMaximaDialog import Ui_Dialog as Ui_BlockMaximaDialog
 from POTDialog import Ui_Dialog as Ui_POTDialog
+from PlotExtremesDialog import Ui_Dialog as Ui_PlotExtremesDialog
 
 
 # Import logic
@@ -48,6 +49,7 @@ class PyEVAMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.pushButton_8.clicked.connect(self.mwPlotSeries)
         self.pushButton_3.clicked.connect(self.mwBlockMaxima)
         self.pushButton_4.clicked.connect(self.mwPOT)
+        self.pushButton_9.clicked.connect(self.mwPlotExtremes)
 
     ##################################################
     # Toolbar functions
@@ -165,6 +167,13 @@ class PyEVAMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         POT_Ui.PyEVAPOTExtractSignal.connect(self.mwUI_update)
         POT_Ui.show()
         print('POT extraction dialog closed with exit status {}'.format(POT_Ui.exec()))
+
+    def mwPlotExtremes(self):
+        global app_state
+        print('Opening the extreme values plotter dialog')
+        PE_Ui = PyEVAPlotExtremesDialog()
+        PE_Ui.show()
+        print('Extreme values plotter dialog closed with exit status {}'.format(PE_Ui.exec()))
 
     def mwFit(self):
         global app_state
@@ -912,7 +921,7 @@ class PyEVAPlotSeriesDialog(QtGui.QDialog, Ui_PlotSeriesDialog):
 
     def __init__(self, parent=None):
         global app_state
-        QtGui.QWidget.__init__(self, parent)
+        QtGui.QDialog.__init__(self, parent)
         self.setupUi(self)
         data = app_state[1][0].values
         headers = app_state[1][0].columns.values
@@ -940,7 +949,6 @@ class PyEVAPlotSeriesDialog(QtGui.QDialog, Ui_PlotSeriesDialog):
         data = app_state[1][0]
 
         # Perform basic missing values handling
-        
         try:
             column = str(self.comboBox.currentText())
             data[column] = data[column].replace(r'[a-zA-Z _&$#@?]+', '999.9', regex=True)
@@ -957,8 +965,6 @@ class PyEVAPlotSeriesDialog(QtGui.QDialog, Ui_PlotSeriesDialog):
         data = data[data[column] != 999.9]
         data = data[data[column] != 99]
         data = data[data[column] != 99.9]
-        print(data[column])
-
         try:
             data = data[data[column] != 'NaN']
             data = data[data[column] != 'None']
@@ -1219,6 +1225,57 @@ class PyEVAPOTDialog(QtGui.QDialog, Ui_POTDialog):
 
         potEThread.finished.connect(potUpdate)
         potEThread.start()
+
+
+class PyEVAPlotExtremesDialog(QtGui.QDialog, Ui_PlotExtremesDialog):
+
+    global app_state
+
+    def __init__(self, parent=None):
+        global app_state
+        QtGui.QDialog.__init__(self, parent)
+        self.setupUi(self)
+
+        # Map buttons to functions
+        self.pushButton.clicked.connect(self.pedPlot)
+
+    def pedPlot(self):
+        global app_state
+        series = app_state[2].data
+        extremes = app_state[2].extremes
+
+        series_marker = self.comboBox_2.currentText()
+        series_y = series[app_state[2].col].values
+        series_x = pd.to_datetime(series.index)
+        if series_marker == 'x' or series_marker == '+':
+            series_facecolor = 'royalblue'
+            series_edgecolors = 'royalblue'
+        else:
+            series_facecolor = 'None'
+            series_edgecolors = 'royalblue'
+
+        extremes_marker = self.comboBox_4.currentText()
+        extremes_y = extremes[app_state[2].col].values
+        extremes_x = pd.to_datetime(extremes.index)
+        if extremes_marker == 'x' or extremes_marker == '+':
+            extremes_facecolor = 'orangered'
+            extremes_edgecolors = 'orangered'
+        else:
+            extremes_facecolor = 'None'
+            extremes_edgecolors = 'orangered'
+
+        with plt.style.context('bmh'):
+            plt.figure(figsize=(18, 5))
+            plt.subplot(1, 1, 1)
+            plt.scatter(x=series_x, y=series_y, s=self.spinBox.value(),
+                        marker=series_marker, facecolor=series_facecolor, edgecolors=series_edgecolors)
+            plt.scatter(x=extremes_x, y=extremes_y, s=self.spinBox_2.value(),
+                        marker=extremes_marker, facecolor=extremes_facecolor, edgecolors=extremes_edgecolors)
+            plt.xlabel(self.lineEdit_2.text())
+            plt.ylabel(self.lineEdit_3.text())
+            plt.title(self.lineEdit.text())
+            plt.show()
+
 
 class LoadingDialog(QtGui.QDialog):
 
