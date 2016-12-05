@@ -3,6 +3,7 @@ from MainWindow import Ui_MainWindow
 from ParseDialog import Ui_Dialog as Ui_ParseDialog
 from PlotSeriesDialog import Ui_Dialog as Ui_PlotSeriesDialog
 from BlockMaximaDialog import Ui_Dialog as Ui_BlockMaximaDialog
+from POTDialog import Ui_Dialog as Ui_POTDialog
 
 
 # Import logic
@@ -46,6 +47,7 @@ class PyEVAMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.pushButton_11.clicked.connect(self.mwExportSeries)
         self.pushButton_8.clicked.connect(self.mwPlotSeries)
         self.pushButton_3.clicked.connect(self.mwBlockMaxima)
+        self.pushButton_4.clicked.connect(self.mwPOT)
 
     ##################################################
     # Toolbar functions
@@ -155,6 +157,14 @@ class PyEVAMainWindow(QtGui.QMainWindow, Ui_MainWindow):
         BM_Ui.PyEVABlockMaximaDialogExtractSignal.connect(self.mwUI_update)
         BM_Ui.show()
         print('Block maxima extraction dialog closed with exist status {}'.format(BM_Ui.exec()))
+
+    def mwPOT(self):
+        global app_state
+        print('Opening the POT extraction dialog')
+        POT_Ui = PyEVAPOTDialog()
+        POT_Ui.PyEVAPOTExtractSignal.connect(self.mwUI_update)
+        POT_Ui.show()
+        print('POT extraction dialog closed with exit status {}'.format(POT_Ui.exec()))
 
     def mwFit(self):
         global app_state
@@ -985,7 +995,7 @@ class PyEVABlockMaximaDialog(QtGui.QDialog, Ui_BlockMaximaDialog):
 
     def __init__(self, parent=None):
         global app_state
-        QtGui.QWidget.__init__(self, parent)
+        QtGui.QDialog.__init__(self, parent)
         self.setupUi(self)
 
         data = app_state[1][0].values
@@ -1049,6 +1059,166 @@ class PyEVABlockMaximaDialog(QtGui.QDialog, Ui_BlockMaximaDialog):
         bmdThread.finished.connect(bmdUpdate)
         bmdThread.start()
 
+
+class PyEVAPOTDialog(QtGui.QDialog, Ui_POTDialog):
+
+    global app_state
+    PyEVAPOTExtractSignal = QtCore.pyqtSignal()
+
+    def __init__(self, parent=None):
+        global app_state
+        QtGui.QDialog.__init__(self, parent)
+        self.setupUi(self)
+
+        data = app_state[1][0].values
+        headers = app_state[1][0].columns.values
+        index = app_state[1][0].index.values
+
+        # Populate preview table
+        self.tableWidget.setRowCount(50)
+        self.tableWidget.setColumnCount(len(data[50]))
+        for i in range(len(headers)):
+            self.tableWidget.setHorizontalHeaderItem(i, QtGui.QTableWidgetItem(str(headers[i])))
+        for i in range(50):
+            self.tableWidget.setVerticalHeaderItem(i, QtGui.QTableWidgetItem(str(index[i])))
+        for i, row in enumerate(data[0:50]):
+            for j, col in enumerate(row):
+                self.tableWidget.setItem(i, j, QtGui.QTableWidgetItem(str(col)))
+
+        self.comboBox.clear()
+        self.comboBox.addItems(list([str(x) for x in headers]))
+        self.comboBox_2.clear()
+        self.comboBox_2.addItems(list([str(x) for x in headers]))
+
+        # Map buttons to functions
+        self.pushButton_2.clicked.connect(self.potMeanResLife)
+        self.pushButton.clicked.connect(self.potParStabPlot)
+        self.pushButton_3.clicked.connect(self.potEmpTres)
+        self.pushButton_4.clicked.connect(self.potExtract)
+
+    def potMeanResLife(self):
+        global app_state
+        print('Generating the mean residual life plot...')
+        column = str(self.comboBox.currentText())
+        u = self.lineEdit.text()
+        u = u.split(':')
+        u = np.arange(float(u[0]), float(u[1]) + float(u[2]), float(u[2]))
+        decluster = self.checkBox.checkState()
+        try:
+            r = self.doubleSpinBox.value()
+        except:
+            r = 24
+
+        class potMRLWorker(QtCore.QThread):
+            global app_state
+            def __init__(self, mw):
+                super(potMRLWorker, self).__init__(mw)
+
+            def run(self):
+                global app_state
+                app_state[1][0].index = pd.to_datetime(app_state[1][0].index)
+                app_state[2] = EVA(app_state[1][0][column].to_frame(), col=column, handle_nans=True, usetex=False)
+                app_state[2].pot_residuals(u=u, decluster=decluster, r=r, name='')
+
+        potLoader = LoadingDialog()
+        potLoader.setModal(True)
+        potLoader.show()
+        potMRLThread = potMRLWorker(self)
+
+        def potUpdate():
+            self.PyEVAPOTExtractSignal.emit()
+            potLoader.close()
+        potMRLThread.finished.connect(potUpdate)
+        potMRLThread.start()
+
+    def potParStabPlot(self):
+        global app_state
+        print('Generating the parameter stability plot...')
+        column = str(self.comboBox.currentText())
+        u = self.lineEdit.text()
+        u = u.split(':')
+        u = np.arange(float(u[0]), float(u[1]) + float(u[2]), float(u[2]))
+        decluster = self.checkBox.checkState()
+        try:
+            r = self.doubleSpinBox.value()
+        except:
+            r = 24
+
+        class potPSPWorker(QtCore.QThread):
+            global app_state
+
+            def __init__(self, mw):
+                super(potPSPWorker, self).__init__(mw)
+
+            def run(self):
+                global app_state
+                app_state[1][0].index = pd.to_datetime(app_state[1][0].index)
+                app_state[2] = EVA(app_state[1][0][column].to_frame(), col=column, handle_nans=True, usetex=False)
+                app_state[2].par_stab_plot(u=u, decluster=decluster, r=r, name='')
+
+        potLoader = LoadingDialog()
+        potLoader.setModal(True)
+        potLoader.show()
+        potPSPThread = potPSPWorker(self)
+
+        def potUpdate():
+            self.PyEVAPOTExtractSignal.emit()
+            potLoader.close()
+
+        potPSPThread.finished.connect(potUpdate)
+        potPSPThread.start()
+
+    def potEmpTres(self):
+        pass
+
+    def potExtract(self):
+        global app_state
+        print('Extracting extreme values...')
+        column = str(self.comboBox_2.currentText())
+        u = float(self.lineEdit_2.text())
+        decluster = self.checkBox_2.checkState()
+        try:
+            r = self.doubleSpinBox_2.value()
+        except:
+            r = 24
+
+        class potEWorker(QtCore.QThread):
+            global app_state
+
+            def __init__(self, mw):
+                super(potEWorker, self).__init__(mw)
+
+            def run(self):
+                global app_state
+                app_state[1][0].index = pd.to_datetime(app_state[1][0].index)
+                app_state[2] = EVA(app_state[1][0][column].to_frame(), col=column, handle_nans=True, usetex=False)
+                app_state[2].get_extremes(method='POT', u=u, decluster=decluster, r=r)
+                app_state[1][1] = app_state[2].extremes
+                print(app_state[1][1])
+
+        potLoader = LoadingDialog()
+        potLoader.setModal(True)
+        potLoader.show()
+        potEThread = potEWorker(self)
+
+        def potUpdate():
+            rows2display = min(50, len(app_state[2].extremes) - 1)
+            self.tableWidget_2.setRowCount(rows2display)
+            self.tableWidget_2.setColumnCount(len(app_state[2].extremes.values[rows2display]))
+            for i in range(len(app_state[2].extremes.columns)):
+                self.tableWidget_2.setHorizontalHeaderItem(i, QtGui.QTableWidgetItem(
+                    str(app_state[2].extremes.columns[i])))
+            for i in range(rows2display):
+                self.tableWidget_2.setVerticalHeaderItem(i, QtGui.QTableWidgetItem(str(app_state[2].extremes.index[i])))
+            for i, row in enumerate(app_state[2].extremes.values[0:rows2display]):
+                for j, col in enumerate(row):
+                    self.tableWidget_2.setItem(i, j, QtGui.QTableWidgetItem(str(col)))
+            app_state[1][1] = app_state[2].extremes
+            self.PyEVAPOTExtractSignal.emit()
+            potLoader.close()
+
+        potEThread.finished.connect(potUpdate)
+        potEThread.start()
 
 class LoadingDialog(QtGui.QDialog):
 
