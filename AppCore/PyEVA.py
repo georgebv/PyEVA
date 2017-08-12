@@ -8,7 +8,7 @@ from PlotExtremesDialog import Ui_Dialog as Ui_PlotExtremesDialog
 
 
 # Import logic
-from coastlib.coreutils.data_analysis_tools import EVA
+from coastlib.analyze.extreme import EVA
 from PyQt4 import QtGui, QtCore
 import pandas as pd
 import pickle
